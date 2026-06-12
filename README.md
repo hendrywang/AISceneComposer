@@ -43,9 +43,9 @@ The 3D blocking image is intentionally simple. It is not meant to be beautiful; 
 
 The same idea can be used with a different prompt/style direction:
 
-| 3D blocking reference                                                                                         | Generated image                                                                                                                   |
-| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| ![3D blocking reference reused for an alternate generated image](./docs/assets/readme/blocking-reference.png) | ![Alternate generated post-apocalyptic scene preserving the same general blocking](./docs/assets/readme/generated-result-02.jpeg) |
+| 3D blocking reference                                                                                                | Generated image                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| ![Alternate 3D blocking reference with a different pose arrangement](./docs/assets/readme/blocking-reference-02.png) | ![Alternate generated post-apocalyptic scene preserving the same general blocking](./docs/assets/readme/generated-result-02.jpeg) |
 
 The important part is not that the proxy figures look realistic. The important part is that the final image preserves
 the intended left/right arrangement, relative scale, pose direction, and camera framing much more reliably than a
