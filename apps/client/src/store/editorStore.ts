@@ -43,6 +43,7 @@ interface EditorState {
   clear: () => void;
   select: (id: string | null) => void;
   removeSelected: () => void;
+  duplicateSelected: () => void;
   commitTransform: (id: string, position: Vec3, rotationY: number) => void;
   setMode: (m: TransformMode) => void;
   setPose: (id: string, poseId: string) => void;
@@ -134,6 +135,23 @@ export const useEditor = create<EditorState>((set) => ({
       objects: s.objects.filter((o) => o.id !== s.selectedId),
       selectedId: null,
     })),
+
+  // 复制选中物体:在其旁边(世界 +X,按脚印宽度留间距)再放一份,并选中副本。
+  // 角色副本取下一个身份色(沿用 add 的轮转),保证多人可区分;道具沿用原色。房间不复制。
+  duplicateSelected: () =>
+    set((s) => {
+      const src = s.objects.find((o) => o.id === s.selectedId);
+      if (!src || src.kind === 'environment') return {};
+      const actorCount = s.objects.filter((o) => o.kind === 'actor').length;
+      const gap = Math.max(src.size[0], 0.6) + 0.3;
+      const copy: EditorObject = {
+        ...src,
+        id: uid(),
+        position: [src.position[0] + gap, 0, src.position[2]],
+        color: src.kind === 'actor' ? ACTOR_COLORS[actorCount % ACTOR_COLORS.length]! : src.color,
+      };
+      return { objects: [...s.objects, copy], selectedId: copy.id };
+    }),
 
   commitTransform: (id, position, rotationY) =>
     set((s) => ({

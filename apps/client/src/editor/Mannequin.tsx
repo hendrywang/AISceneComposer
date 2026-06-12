@@ -148,20 +148,28 @@ export function Mannequin({
                 <meshStandardMaterial color={color} />
               </mesh>
               {body.hair && (
-                <>
-                  {/* 顶部头发 */}
-                  <mesh position={[0, p.neck + p.headR * 1.5, -p.headR * 0.1]}>
-                    <boxGeometry args={[p.headR * 2.1, p.headR * 0.9, p.headR * 2.1]} />
+                <group position={[0, p.neck + p.headR, 0]}>
+                  {/* 头发 = 圆顶发量 + 后脑发量(均上移/后移)。
+                      关键:绝不在眉/眼高度横切面部 —— 旧版顶部方块的下沿正好落在眼睛一线,
+                      出图时被 AI 误读成 VR 头显/眼镜。圆形几何+留出额前,可消除这种误读。 */}
+                  {/* 顶部圆顶:盖住头顶,前缘止于额上方,露出面部 */}
+                  <mesh position={[0, p.headR * 0.5, -p.headR * 0.12]}>
+                    <sphereGeometry args={[p.headR * 0.95, 16, 16]} />
                     <meshStandardMaterial color={body.hair} />
                   </mesh>
-                  {/* 长发:脑后垂至肩 */}
+                  {/* 后脑/枕部:补足侧后方发量,让发型从各角度都成立 */}
+                  <mesh position={[0, p.headR * 0.06, -p.headR * 0.5]}>
+                    <sphereGeometry args={[p.headR * 0.74, 16, 16]} />
+                    <meshStandardMaterial color={body.hair} />
+                  </mesh>
+                  {/* 长发:纯在脑后(-z)垂落至肩,绝不经过面部 */}
                   {body.hairStyle === 'long' && (
-                    <mesh position={[0, p.neck + p.headR * 0.4, -p.headR * 0.78]}>
-                      <boxGeometry args={[p.headR * 1.9, p.headR * 3.2, p.headR * 0.7]} />
+                    <mesh position={[0, -p.headR * 1.05, -p.headR * 0.62]}>
+                      <boxGeometry args={[p.headR * 1.7, p.headR * 2.8, p.headR * 0.7]} />
                       <meshStandardMaterial color={body.hair} />
                     </mesh>
                   )}
-                </>
+                </group>
               )}
             </group>
 

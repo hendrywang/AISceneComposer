@@ -25,6 +25,19 @@ export function ensureWebGlobalStyles() {
   }
   style.textContent = CSS;
 
+  // viewport-fit=cover:让 env(safe-area-inset-*) 在 iPhone 刘海/Home 条上非 0(否则恒为 0)。
+  // Expo web 默认 viewport 不含 viewport-fit,这里补 / 改写。
+  let meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.setAttribute('name', 'viewport');
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute(
+    'content',
+    'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover',
+  );
+
   const w = window as unknown as { __ascNoZoom?: boolean };
   if (!w.__ascNoZoom) {
     w.__ascNoZoom = true;

@@ -43,15 +43,20 @@ export const CATALOG: ModelDef[] = [
   { id: 'plant', name: '绿植', type: 'prop', category: '家具', source: { kind: 'furniture', shapeId: 'plant' } },
   { id: 'blackboard', name: '黑板', type: 'prop', category: '家具', source: { kind: 'furniture', shapeId: 'blackboard' } },
   { id: 'studentDesk', name: '课桌', type: 'prop', category: '家具', source: { kind: 'furniture', shapeId: 'studentDesk' } },
+  { id: 'sideboard', name: '矮柜', type: 'prop', category: '家具', source: { kind: 'furniture', shapeId: 'sideboard' } },
+  { id: 'pendant', name: '吊灯', type: 'prop', category: '家具', source: { kind: 'furniture', shapeId: 'pendant' } },
 
   // ── 门窗装饰(靠墙摆放,提供方位标志) ──
   { id: 'door', name: '门', type: 'prop', category: '门窗装饰', source: { kind: 'furniture', shapeId: 'door' } },
   { id: 'window', name: '窗户', type: 'prop', category: '门窗装饰', source: { kind: 'furniture', shapeId: 'window' } },
   { id: 'painting', name: '壁画', type: 'prop', category: '门窗装饰', source: { kind: 'furniture', shapeId: 'painting' } },
+  { id: 'wallClock', name: '挂钟', type: 'prop', category: '门窗装饰', source: { kind: 'furniture', shapeId: 'wallClock' } },
+  { id: 'wallTV', name: '壁挂电视', type: 'prop', category: '门窗装饰', source: { kind: 'furniture', shapeId: 'wallTV' } },
   { id: 'rug', name: '地毯', type: 'prop', category: '门窗装饰', source: { kind: 'furniture', shapeId: 'rug' } },
 
   // ── 场景元素 ──
   { id: 'room', name: '空房间', type: 'environment', category: '场景元素', source: { kind: 'furniture', shapeId: 'room' } },
+  { id: 'roomBalcony', name: '阳台房间', type: 'environment', category: '场景元素', source: { kind: 'furniture', shapeId: 'roomBalcony' } },
 ];
 
 export function getDef(id: string): ModelDef | undefined {

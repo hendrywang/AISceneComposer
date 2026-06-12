@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Grid, OrbitControls, TransformControls, GizmoHelper, GizmoViewport } from '@react-three/drei';
 import { useEditor, type EditorObject } from '../store/editorStore';
+import { useUI } from '../ui/uiStore';
 import { getDef } from './catalog';
 import { ModelView } from './ModelView';
 import CameraRig from './CameraRig';
@@ -61,12 +62,16 @@ function SelectedTransform({ obj }: { obj: EditorObject }) {
   const mode = useEditor((s) => s.transformMode);
   const commit = useEditor((s) => s.commitTransform);
   const select = useEditor((s) => s.select);
+  const setDragging = useUI((s) => s.setDragging);
 
   // 拖动过程中持续把变换写回 store(对平移/旋转都可靠;旋转结束不会再被旧值拨回)
   const onObjectChange = () => {
     if (!group) return;
     commit(obj.id, [group.position.x, group.position.y, group.position.z], group.rotation.y);
   };
+
+  // 中途取消选择/删除时,确保拖动标记复位
+  useEffect(() => () => setDragging(false), [setDragging]);
 
   return (
     <>
@@ -87,6 +92,8 @@ function SelectedTransform({ obj }: { obj: EditorObject }) {
           object={group}
           mode={mode}
           onObjectChange={onObjectChange}
+          onMouseDown={() => setDragging(true)}
+          onMouseUp={() => setDragging(false)}
           showX={mode === 'translate'}
           showY={mode === 'rotate'}
           showZ={mode === 'translate'}
@@ -94,6 +101,45 @@ function SelectedTransform({ obj }: { obj: EditorObject }) {
       )}
     </>
   );
+}
+
+/** 把选中物体「顶部」投影到屏幕像素,写入 uiStore → 悬浮工具条(SelectionHud)据此定位、跟随。
+ *  仅在按需渲染的帧里更新(位移/旋转/选择变化时);静止时不更新。 */
+const _proj = new THREE.Vector3();
+function SelectionHudTracker() {
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
+  const invalidate = useThree((s) => s.invalidate);
+  const selectedId = useEditor((s) => s.selectedId);
+  const objects = useEditor((s) => s.objects);
+  const setHud = useUI((s) => s.setHud);
+
+  const sel = objects.find((o) => o.id === selectedId) ?? null;
+  const last = useRef({ x: 0, y: 0, v: false });
+
+  // 选择变化时强制渲染一帧,确保锚点立即算出
+  useEffect(() => {
+    invalidate();
+  }, [selectedId, invalidate]);
+
+  useFrame(() => {
+    if (!sel || sel.kind === 'environment') {
+      if (last.current.v) {
+        last.current = { x: 0, y: 0, v: false };
+        setHud(0, 0, false);
+      }
+      return;
+    }
+    _proj.set(sel.position[0], sel.size[1], sel.position[2]).project(camera);
+    const inFront = _proj.z < 1;
+    const sx = Math.max(12, Math.min((_proj.x * 0.5 + 0.5) * size.width + 28, Math.max(12, size.width - 232)));
+    const sy = Math.max(12, Math.min((1 - (_proj.y * 0.5 + 0.5)) * size.height - 28, Math.max(12, size.height - 210)));
+    if (Math.abs(sx - last.current.x) > 0.5 || Math.abs(sy - last.current.y) > 0.5 || inFront !== last.current.v) {
+      last.current = { x: sx, y: sy, v: inFront };
+      setHud(sx, sy, inFront);
+    }
+  });
+  return null;
 }
 
 /** 主视图每帧把当前相机位姿写入 cameraSync,并触发预览窗按需重绘 */
@@ -132,8 +178,10 @@ export default function SceneView() {
 
       <CameraRig />
       <CameraSyncWriter />
+      <SelectionHudTracker />
       <OrbitControls makeDefault />
-      <GizmoHelper alignment="bottom-right" margin={[64, 64]}>
+      {/* 方位小立方:放在右下空白带,margin 抬高以避开底部相机面板/手机 Tab 栏 */}
+      <GizmoHelper alignment="bottom-right" margin={[72, 104]}>
         <GizmoViewport />
       </GizmoHelper>
     </>

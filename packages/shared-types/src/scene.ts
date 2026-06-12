@@ -7,7 +7,7 @@
 export type Vec3 = [number, number, number];
 
 /** 电影镜头预设:基于选中角色实时计算机位(不存死坐标) */
-export type CameraPreset = 'ots' | 'two-shot' | 'low' | 'high' | 'dutch' | 'closeup';
+export type CameraPreset = 'ots' | 'two-shot' | 'group' | 'low' | 'high' | 'dutch' | 'closeup';
 
 export interface Actor {
   id: string;
