@@ -32,11 +32,7 @@ export function Button({
   tooltipPlace = 'top',
   style,
 }: ButtonProps) {
-  const bg = active
-    ? tone === 'danger'
-      ? color.danger
-      : color.accent
-    : color.surface;
+  const bg = active ? (tone === 'danger' ? color.danger : color.accent) : color.surface;
 
   const { ref, hovered, align, hoverProps } = useHoverTip();
 
@@ -58,10 +54,7 @@ export function Button({
     >
       <View style={styles.row}>
         {icon ? <Text style={styles.icon}>{icon}</Text> : null}
-        <Text
-          style={[styles.label, tone === 'danger' && !active && styles.dangerText]}
-          numberOfLines={1}
-        >
+        <Text style={[styles.label, tone === 'danger' && !active && styles.dangerText]} numberOfLines={1}>
           {label}
         </Text>
       </View>

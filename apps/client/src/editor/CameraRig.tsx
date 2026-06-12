@@ -54,8 +54,7 @@ export default function CameraRig() {
         break;
     }
     clear();
-    // 只在收到新命令时执行
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // 只在收到新命令时执行。
   }, [cmd]);
 
   return null;

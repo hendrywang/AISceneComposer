@@ -14,12 +14,12 @@
 
 ## 许可策略
 
-| 来源 | 许可 | 商用 | 署名 | 再分发 | 用法 |
-|------|------|------|------|--------|------|
-| **Kenney** | CC0 | ✅ | 否 | ✅ | **主用**:角色、家具、房间;低模、风格统一 |
-| **Poly Haven** | CC0 | ✅ | 否 | ✅ | 高质量道具/环境(面数偏高,需审计优化) |
-| Mixamo | Adobe 标准 | ✅ | 否 | ❌(须内嵌) | 可选:角色姿势更多;**禁用于训练 ML、禁单独再分发** |
-| Meshy / Tripo | CC BY 4.0 | ✅(须署名) | ✅ | ✅ | 可选补充:文生 3D,风格可控 |
+| 来源           | 许可       | 商用       | 署名 | 再分发     | 用法                                              |
+| -------------- | ---------- | ---------- | ---- | ---------- | ------------------------------------------------- |
+| **Kenney**     | CC0        | ✅         | 否   | ✅         | **主用**:角色、家具、房间;低模、风格统一          |
+| **Poly Haven** | CC0        | ✅         | 否   | ✅         | 高质量道具/环境(面数偏高,需审计优化)              |
+| Mixamo         | Adobe 标准 | ✅         | 否   | ❌(须内嵌) | 可选:角色姿势更多;**禁用于训练 ML、禁单独再分发** |
+| Meshy / Tripo  | CC BY 4.0  | ✅(须署名) | ✅   | ✅         | 可选补充:文生 3D,风格可控                         |
 
 **结论:起步全用 Kenney(CC0,最干净)**;需要更丰富道具再用 Poly Haven;Mixamo 仅作姿势补充,且因"禁 ML 训练 / 禁再分发"条款,**走向商业化时优先 CC0 角色更稳妥**。
 
@@ -27,18 +27,18 @@
 
 ## 起步资产清单(~8–10,够阶段 1 验证)
 
-| # | 资产 | 类型 | 来源 | 备注 |
-|---|------|------|------|------|
-| 1 | 角色 A(站) | character/pose | Kenney Mini Characters | 身份色:红 |
-| 2 | 角色 A(坐) | character/pose | Kenney(或 Mixamo 烘焙坐姿) | 同一角色不同 `poseId` |
-| 3 | 角色 B(站) | character/pose | Kenney Mini Characters | 身份色:蓝 |
-| 4 | 角色 B(坐) | character/pose | Kenney / Mixamo | |
-| 5 | 椅子 | prop | Kenney Furniture Kit | < 1k 面 |
-| 6 | 桌子 | prop | Kenney Furniture Kit | < 3k 面 |
-| 7 | 书架/柜 | prop | Kenney / Poly Haven | Poly Haven 需审计面数 |
-| 8 | 台灯 | prop | Kenney Furniture Kit | < 1k 面 |
-| 9 | 房间(墙+地) | environment | Kenney Building Kit(模块拼) | 单个室内场景 |
-| (10) | 备用道具 | prop | 视需要 | |
+| #    | 资产        | 类型           | 来源                        | 备注                  |
+| ---- | ----------- | -------------- | --------------------------- | --------------------- |
+| 1    | 角色 A(站)  | character/pose | Kenney Mini Characters      | 身份色:红             |
+| 2    | 角色 A(坐)  | character/pose | Kenney(或 Mixamo 烘焙坐姿)  | 同一角色不同 `poseId` |
+| 3    | 角色 B(站)  | character/pose | Kenney Mini Characters      | 身份色:蓝             |
+| 4    | 角色 B(坐)  | character/pose | Kenney / Mixamo             |                       |
+| 5    | 椅子        | prop           | Kenney Furniture Kit        | < 1k 面               |
+| 6    | 桌子        | prop           | Kenney Furniture Kit        | < 3k 面               |
+| 7    | 书架/柜     | prop           | Kenney / Poly Haven         | Poly Haven 需审计面数 |
+| 8    | 台灯        | prop           | Kenney Furniture Kit        | < 1k 面               |
+| 9    | 房间(墙+地) | environment    | Kenney Building Kit(模块拼) | 单个室内场景          |
+| (10) | 备用道具    | prop           | 视需要                      |                       |
 
 足够摆出"室内双人对话"这一典型场景,验证机位与关系表达。
 
@@ -55,12 +55,12 @@
 
 **多边形预算**(代理体,够用即可):
 
-| 类别 | 三角面 |
-|------|--------|
-| 角色 | 5k–15k |
+| 类别          | 三角面  |
+| ------------- | ------- |
+| 角色          | 5k–15k  |
 | 小道具(椅/灯) | 0.3k–1k |
-| 大道具(桌/柜) | 1k–3k |
-| 房间/环境 | 5k–20k |
+| 大道具(桌/柜) | 1k–3k   |
+| 房间/环境     | 5k–20k  |
 
 压缩后目标:角色 < ~1.5MB,道具 < ~50KB。
 

@@ -18,7 +18,12 @@ const blobToDataUrl = (b: Blob): Promise<string> =>
 
 const exportGlb = (obj: THREE.Object3D): Promise<ArrayBuffer> =>
   new Promise((res, rej) =>
-    new GLTFExporter().parse(obj, (o) => res(o as ArrayBuffer), (e) => rej(e), { binary: true }),
+    new GLTFExporter().parse(
+      obj,
+      (o) => res(o as ArrayBuffer),
+      (e) => rej(e),
+      { binary: true },
+    ),
   );
 
 const hasMesh = (o: THREE.Object3D): boolean => {

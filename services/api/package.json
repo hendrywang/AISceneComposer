@@ -2,6 +2,7 @@
   "name": "@asc/api",
   "version": "0.0.0",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -9,7 +10,7 @@
     "start": "tsx src/index.ts",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "lint": "echo \"lint: TODO\""
+    "lint": "eslint src"
   },
   "dependencies": {
     "@asc/shared-types": "workspace:*",

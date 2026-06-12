@@ -3,7 +3,14 @@
 //   + 产出 CREDITS.md(许可署名聚合)。
 // 用法:pnpm --filter @asc/resource-library gen  (或根目录 pnpm gen)
 import {
-  readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, rmSync, copyFileSync, statSync,
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  existsSync,
+  mkdirSync,
+  rmSync,
+  copyFileSync,
+  statSync,
 } from 'fs';
 import { join, resolve } from 'path';
 import { compactJson } from './format';
@@ -27,7 +34,10 @@ function validate(id: string, dir: string, d: any, toCopy: [string, string][]) {
   if (!VALID_TYPES.includes(d.type)) fail(id, `type 非法:${d.type}`);
   if (!d.category) fail(id, '缺少 category');
   const s = d.source;
-  if (!s || typeof s.kind !== 'string') { fail(id, '缺少 source.kind'); return; }
+  if (!s || typeof s.kind !== 'string') {
+    fail(id, '缺少 source.kind');
+    return;
+  }
 
   if (s.kind === 'primitive') {
     if (!Array.isArray(s.parts) || s.parts.length === 0) fail(id, 'primitive 没有 parts');
@@ -41,8 +51,14 @@ function validate(id: string, dir: string, d: any, toCopy: [string, string][]) {
     if (!d.license?.license) fail(id, 'gltf 必须带 license(开源再分发命脉)');
     const files = [s.file, ...Object.values(s.poses ?? {})] as string[];
     for (const f of files) {
-      if (typeof f !== 'string') { fail(id, 'gltf file/poses 路径非字符串'); continue; }
-      if (!existsSync(join(dir, f))) { fail(id, `找不到模型文件:${f}`); continue; }
+      if (typeof f !== 'string') {
+        fail(id, 'gltf file/poses 路径非字符串');
+        continue;
+      }
+      if (!existsSync(join(dir, f))) {
+        fail(id, `找不到模型文件:${f}`);
+        continue;
+      }
       toCopy.push([join(dir, f), join(PUBLIC_DIR, id, f)]);
     }
     // 展开为服务相对路径:models/<id>/<file>
@@ -67,10 +83,17 @@ for (const id of readdirSync(MODELS_DIR)) {
   const dir = join(MODELS_DIR, id);
   if (!statSync(dir).isDirectory()) continue;
   const metaPath = join(dir, 'meta.json');
-  if (!existsSync(metaPath)) { fail(id, '缺少 meta.json'); continue; }
+  if (!existsSync(metaPath)) {
+    fail(id, '缺少 meta.json');
+    continue;
+  }
   let def: any;
-  try { def = JSON.parse(readFileSync(metaPath, 'utf8')); }
-  catch { fail(id, 'meta.json 不是合法 JSON'); continue; }
+  try {
+    def = JSON.parse(readFileSync(metaPath, 'utf8'));
+  } catch {
+    fail(id, 'meta.json 不是合法 JSON');
+    continue;
+  }
   validate(id, dir, def, toCopy);
   entries.push(def);
 }
@@ -93,7 +116,10 @@ mkdirSync(GEN_DIR, { recursive: true });
 const header =
   '// ⚠️ 自动生成,请勿手改。改模型 = 改 models/<id>/meta.json,然后 `pnpm gen`。\n' +
   "import type { ModelDef } from '../types';\n\n";
-writeFileSync(join(GEN_DIR, 'catalog.ts'), header + 'export const CATALOG: ModelDef[] = ' + compactJson(entries) + ';\n');
+writeFileSync(
+  join(GEN_DIR, 'catalog.ts'),
+  header + 'export const CATALOG: ModelDef[] = ' + compactJson(entries) + ';\n',
+);
 
 // ── 拷贝 gltf 模型文件到 client public(dev 托管) ──
 rmSync(PUBLIC_DIR, { recursive: true, force: true });
@@ -113,4 +139,6 @@ for (const e of licensed) {
 }
 writeFileSync(join(PKG, 'CREDITS.md'), credits);
 
-console.log(`资源库生成完成:${entries.length} 个模型,${licensed.length} 个带许可资产,拷贝 ${toCopy.length} 个文件 → public/models`);
+console.log(
+  `资源库生成完成:${entries.length} 个模型,${licensed.length} 个带许可资产,拷贝 ${toCopy.length} 个文件 → public/models`,
+);

@@ -1,0 +1,12 @@
+node_modules
+.turbo
+.expo
+apps/client/.expo
+apps/client/public/models
+apps/client/dist
+dist
+web-build
+coverage
+pnpm-lock.yaml
+packages/resource-library/src/generated
+packages/resource-library/CREDITS.md

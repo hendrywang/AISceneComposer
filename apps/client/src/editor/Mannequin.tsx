@@ -54,15 +54,7 @@ function Segment({
  * **自动落地**:渲染后用包围盒量出最低点,整体平移到脚底=本地 y=0。
  * 这样任意姿势(站/坐/走…)都脚着地,无需逐姿势手调高度。
  */
-export function Mannequin({
-  body,
-  pose,
-  color,
-}: {
-  body: BodyParams;
-  pose: string;
-  color: string;
-}) {
+export function Mannequin({ body, pose, color }: { body: BodyParams; pose: string; color: string }) {
   const p = proportions(body);
   const P = POSES[pose] ?? {};
   const j = (n: JointName): [number, number, number] => P[n] ?? [0, 0, 0];
@@ -78,8 +70,7 @@ export function Mannequin({
     if (Number.isFinite(box.min.y) && Math.abs(box.min.y) > 1e-4) {
       setOffY((prev) => prev - box.min.y);
     }
-    // 仅在体型/姿势变化时重算(位置/旋转不影响竖直落地)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // 仅在体型/姿势变化时重算(位置/旋转不影响竖直落地)。
   }, [pose, body.height, body.build, body.shoulder, body.hip, body.head]);
 
   const foot = (

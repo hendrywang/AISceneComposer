@@ -5,6 +5,7 @@ node_modules/
 dist/
 build/
 web-build/
+coverage/
 .turbo/
 
 # 资源库 gen 产物:public/models 是 models/<id>/*.glb 的拷贝(`pnpm gen` 重建,勿提交)

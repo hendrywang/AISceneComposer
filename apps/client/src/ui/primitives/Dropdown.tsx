@@ -32,7 +32,11 @@ export function Dropdown({ value, options, onChange, align = 'right' }: Dropdown
                 onChange(o);
                 setOpen(false);
               }}
-              style={({ pressed }) => [styles.item, pressed && styles.pressed, o === value && styles.itemActive]}
+              style={({ pressed }) => [
+                styles.item,
+                pressed && styles.pressed,
+                o === value && styles.itemActive,
+              ]}
             >
               <Text style={styles.btnText}>{o}</Text>
             </Pressable>
@@ -64,7 +68,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: color.border,
   },
-  item: { minHeight: touch.min, paddingHorizontal: space.lg, justifyContent: 'center', borderRadius: radius.sm },
+  item: {
+    minHeight: touch.min,
+    paddingHorizontal: space.lg,
+    justifyContent: 'center',
+    borderRadius: radius.sm,
+  },
   itemActive: { backgroundColor: color.accentDim },
   pressed: { opacity: 0.7 },
   btnText: { color: color.text, fontSize: font.btn, fontWeight: font.weightBtn },

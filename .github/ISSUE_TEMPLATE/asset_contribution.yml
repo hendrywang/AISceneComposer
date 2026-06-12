@@ -1,0 +1,39 @@
+name: Asset contribution
+description: Propose or discuss a model for the resource library.
+title: '[Asset]: '
+labels: ['asset', 'needs-license-review']
+body:
+  - type: input
+    id: asset-name
+    attributes:
+      label: Asset name
+      placeholder: e.g. oak chair, classroom desk, balcony room
+    validations:
+      required: true
+  - type: dropdown
+    id: asset-type
+    attributes:
+      label: Asset type
+      options:
+        - actor
+        - prop
+        - environment
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source and license
+      description: Include the original source URL, license name, author, and attribution text.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Files
+      description: List model files and whether textures are embedded in a .glb.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Polygon count, scale, intended category, or preview screenshots.

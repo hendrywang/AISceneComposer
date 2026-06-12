@@ -10,19 +10,19 @@
 ## TL;DR
 
 - **托管 = 经典 Firebase Hosting**(不是 App Hosting)。Expo web 是静态 SPA,经典 Hosting 才对口。
-- **`/api/**` 用 Hosting rewrite 接到 Cloud Run** → 网页与 API 同源,免 CORS。
+- **`/api/**` 用 Hosting rewrite 接到 Cloud Run\*\* → 网页与 API 同源,免 CORS。
 - **生成后端 = 独立 Cloud Run(Node)**,持有模型密钥,绝不进客户端。
 - **安全底线 = App Check + Security Rules**(按 `ownerId`/`uid` 隔离)。
 - 数据 → Firestore;资产/截图/成图 → Cloud Storage;登录 → Auth。
 
 ## 1. 托管:经典 Hosting vs App Hosting
 
-| | 经典 Firebase Hosting | Firebase App Hosting |
-|---|---|---|
-| 定位 | 静态资源 + 全球 CDN | **SSR 框架**全栈托管 |
-| 适合 | 静态 SPA / 静态导出 | Next.js、Angular 等需服务端渲染 |
-| 底层 | 纯 CDN | Cloud Build + Cloud Run + CDN(连 GitHub,push 即部署) |
-| 本项目 | ✅ **正解** | ❌ 过度设计 |
+|        | 经典 Firebase Hosting | Firebase App Hosting                                 |
+| ------ | --------------------- | ---------------------------------------------------- |
+| 定位   | 静态资源 + 全球 CDN   | **SSR 框架**全栈托管                                 |
+| 适合   | 静态 SPA / 静态导出   | Next.js、Angular 等需服务端渲染                      |
+| 底层   | 纯 CDN                | Cloud Build + Cloud Run + CDN(连 GitHub,push 即部署) |
+| 本项目 | ✅ **正解**           | ❌ 过度设计                                          |
 
 Expo 的 `expo export -p web` 产出**静态 SPA,无 SSR**,所以用经典 Hosting。App Hosting 会附带一个我们用不上的"渲染网页"用 Cloud Run。
 
@@ -30,20 +30,20 @@ Expo 的 `expo export -p web` 产出**静态 SPA,无 SSR**,所以用经典 Hosti
 
 ## 2. 产品 → 角色映射
 
-| 需求 | Firebase 产品 | 说明 |
-|------|--------------|------|
-| Web 托管 | **经典 Hosting** | CDN + `/api` rewrite 到 Cloud Run |
-| 登录 | **Authentication** | 三端共用;Google / 邮箱 |
-| 场景/项目数据 | **Cloud Firestore** | `Scene` 文档,按 `ownerId` |
-| 资产/截图/成图 | **Cloud Storage** | glTF、缩略图、AI 成图;配 CORS + 规则 |
-| 调模型的后端 | **Cloud Run**(独立 Node)| 模型密钥只在服务端 |
-| 访问控制 | **Security Rules** | Firestore + Storage 按归属隔离 |
-| 防滥用 | **App Check** | 证明请求来自真实 App;保护 Run/Firestore/Storage |
-| 异步/排队(按需) | **Cloud Tasks** | 生成耗时;MVP 可先同步 |
-| 缩略图/清理(可选) | **Cloud Functions 触发器** | 如上传 glTF 自动生成缩略图 |
-| 本地开发 | **Emulator Suite** | 本地跑 Auth/Firestore/Storage/Functions |
-| prompt 模板/开关(可选) | **Remote Config** | 写实/二次元两套 prompt 不发版即可改(配合 T13) |
-| 调用模型 | **Vertex AI / Gemini**(Nano Banana 2) | Cloud Run 服务端调 |
+| 需求                   | Firebase 产品                         | 说明                                            |
+| ---------------------- | ------------------------------------- | ----------------------------------------------- |
+| Web 托管               | **经典 Hosting**                      | CDN + `/api` rewrite 到 Cloud Run               |
+| 登录                   | **Authentication**                    | 三端共用;Google / 邮箱                          |
+| 场景/项目数据          | **Cloud Firestore**                   | `Scene` 文档,按 `ownerId`                       |
+| 资产/截图/成图         | **Cloud Storage**                     | glTF、缩略图、AI 成图;配 CORS + 规则            |
+| 调模型的后端           | **Cloud Run**(独立 Node)              | 模型密钥只在服务端                              |
+| 访问控制               | **Security Rules**                    | Firestore + Storage 按归属隔离                  |
+| 防滥用                 | **App Check**                         | 证明请求来自真实 App;保护 Run/Firestore/Storage |
+| 异步/排队(按需)        | **Cloud Tasks**                       | 生成耗时;MVP 可先同步                           |
+| 缩略图/清理(可选)      | **Cloud Functions 触发器**            | 如上传 glTF 自动生成缩略图                      |
+| 本地开发               | **Emulator Suite**                    | 本地跑 Auth/Firestore/Storage/Functions         |
+| prompt 模板/开关(可选) | **Remote Config**                     | 写实/二次元两套 prompt 不发版即可改(配合 T13)   |
+| 调用模型               | **Vertex AI / Gemini**(Nano Banana 2) | Cloud Run 服务端调                              |
 
 ## 3. 请求流
 
@@ -71,9 +71,9 @@ Expo 的 `expo export -p web` 产出**静态 SPA,无 SSR**,所以用经典 Hosti
     "public": "apps/client/dist",
     "rewrites": [
       { "source": "/api/**", "run": { "serviceId": "api", "region": "asia-east1" } },
-      { "source": "**", "destination": "/index.html" }   // SPA 路由兜底
-    ]
-  }
+      { "source": "**", "destination": "/index.html" }, // SPA 路由兜底
+    ],
+  },
 }
 ```
 
@@ -83,11 +83,11 @@ Expo 的 `expo export -p web` 产出**静态 SPA,无 SSR**,所以用经典 Hosti
 
 **Firebase AI Logic**(原 "Vertex AI in Firebase")提供客户端 SDK **直接安全调用 Gemini**(含图像生成),用 App Check 防滥用,**无需自建后端**。
 
-| | Firebase AI Logic | Cloud Run 代理(本项目选型) |
-|---|---|---|
-| 上手 | 最快,省掉后端 | 需写/部署服务 |
-| 控制力 | 弱(无队列/缓存/审核/限流/计费聚合) | 强 |
-| 适用 | 纯自用、求快 | 自用→商业化的长期路径 |
+|        | Firebase AI Logic                  | Cloud Run 代理(本项目选型) |
+| ------ | ---------------------------------- | -------------------------- |
+| 上手   | 最快,省掉后端                      | 需写/部署服务              |
+| 控制力 | 弱(无队列/缓存/审核/限流/计费聚合) | 强                         |
+| 适用   | 纯自用、求快                       | 自用→商业化的长期路径      |
 
 **推荐 Cloud Run**(D14,支撑异步与商业化);若只想自用最快跑通,可临时用 AI Logic,日后再迁。
 
@@ -96,6 +96,7 @@ Expo 的 `expo export -p web` 产出**静态 SPA,无 SSR**,所以用经典 Hosti
 **App Check**:在各服务(Cloud Run / Firestore / Storage)开启强制,Web 端用 reCAPTCHA 提供证明令牌。这是最小防滥用底线。
 
 **Firestore 规则(骨架)**:
+
 ```
 rules_version = '2';
 service cloud.firestore {
@@ -111,6 +112,7 @@ service cloud.firestore {
 ```
 
 **Storage 规则(骨架)**:
+
 ```
 rules_version = '2';
 service firebase.storage {

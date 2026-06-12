@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { useEditor } from '../store/editorStore';
@@ -34,8 +33,7 @@ async function filesToGlb(files: File[]): Promise<{ name: string; dataUrl: strin
     byPath.set(norm(f.name), f);
   }
 
-  const entry =
-    files.find((f) => /\.glb$/i.test(f.name)) ?? files.find((f) => /\.gltf$/i.test(f.name));
+  const entry = files.find((f) => /\.glb$/i.test(f.name)) ?? files.find((f) => /\.gltf$/i.test(f.name));
   if (!entry) throw new Error('未找到 .gltf 或 .glb 入口文件');
 
   // 自包含的单个 .glb:直接用,无需重打包
@@ -64,7 +62,12 @@ async function filesToGlb(files: File[]): Promise<{ name: string; dataUrl: strin
 
     const exporter = new GLTFExporter();
     const glb = await new Promise<ArrayBuffer>((resolve, reject) =>
-      exporter.parse(gltf.scene, (out) => resolve(out as ArrayBuffer), (e) => reject(e), { binary: true }),
+      exporter.parse(
+        gltf.scene,
+        (out) => resolve(out as ArrayBuffer),
+        (e) => reject(e),
+        { binary: true },
+      ),
     );
     return { name: entry.name, dataUrl: await fileToDataUrl(new Blob([glb], { type: 'model/gltf-binary' })) };
   } finally {

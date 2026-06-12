@@ -96,7 +96,12 @@ export function SelectionHud() {
         <View style={styles.card}>
           {/* 变换 */}
           <View style={styles.row}>
-            <HudIconBtn icon="🖐️" tip="移动" active={mode === 'translate'} onPress={() => setMode('translate')} />
+            <HudIconBtn
+              icon="🖐️"
+              tip="移动"
+              active={mode === 'translate'}
+              onPress={() => setMode('translate')}
+            />
             <HudIconBtn icon="🔄" tip="旋转" active={mode === 'rotate'} onPress={() => setMode('rotate')} />
             <HudIconBtn icon="📋" tip="复制" onPress={duplicateSelected} />
             <HudIconBtn icon="🗑" tip="删除" danger onPress={removeSelected} />

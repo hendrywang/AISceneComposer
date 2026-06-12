@@ -13,16 +13,7 @@ export interface PanelProps {
 /** 统一浮层容器:背景 + 边框 + 圆角 + 投影。 */
 export function Panel({ children, solid, noPadding, style }: PanelProps) {
   return (
-    <View
-      style={[
-        styles.base,
-        solid && styles.solid,
-        !noPadding && styles.padding,
-        style,
-      ]}
-    >
-      {children}
-    </View>
+    <View style={[styles.base, solid && styles.solid, !noPadding && styles.padding, style]}>{children}</View>
   );
 }
 

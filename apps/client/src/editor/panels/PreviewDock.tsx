@@ -44,7 +44,11 @@ function IconBtn({
         onPress={onPress}
         hitSlop={6}
         {...(tip ? hoverProps : null)}
-        style={({ pressed }) => [styles.iconBtn, label ? styles.iconBtnWide : null, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.iconBtn,
+          label ? styles.iconBtnWide : null,
+          pressed && styles.pressed,
+        ]}
       >
         <Text style={styles.iconGlyph}>{icon}</Text>
         {label ? <Text style={styles.iconLabel}>{label}</Text> : null}
@@ -79,7 +83,11 @@ function AspectPill({ value, onChange }: { value: string; onChange: (v: string) 
                 onChange(o);
                 setOpen(false);
               }}
-              style={({ pressed }) => [styles.aspectItem, pressed && styles.pressed, o === value && styles.aspectItemActive]}
+              style={({ pressed }) => [
+                styles.aspectItem,
+                pressed && styles.pressed,
+                o === value && styles.aspectItemActive,
+              ]}
             >
               <Text style={styles.aspectText}>{o}</Text>
             </Pressable>
@@ -111,7 +119,11 @@ export function PreviewDock() {
   const ar = bgImageUrl && bgAspect ? bgAspect : ratio.w / ratio.h;
 
   const longEdge =
-    mode === 'thumb' ? layout.previewMin : mode === 'overlay' ? Math.min(width, height) * 0.74 : layout.previewMax;
+    mode === 'thumb'
+      ? layout.previewMin
+      : mode === 'overlay'
+        ? Math.min(width, height) * 0.74
+        : layout.previewMax;
   const { boxW, boxH } = useMemo(() => {
     const w = ar >= 1 ? longEdge : Math.round(longEdge * ar);
     const h = ar >= 1 ? Math.round(longEdge / ar) : longEdge;
@@ -160,7 +172,11 @@ export function PreviewDock() {
           </View>
 
           {mode === 'thumb' ? (
-            <Pressable style={StyleSheet.absoluteFill} onPress={() => setPreviewExpanded(true)} pointerEvents="auto">
+            <Pressable
+              style={StyleSheet.absoluteFill}
+              onPress={() => setPreviewExpanded(true)}
+              pointerEvents="auto"
+            >
               <View style={styles.thumbBadge} pointerEvents="none">
                 <Text style={styles.thumbBadgeText}>⤢ 取景</Text>
               </View>
@@ -190,7 +206,13 @@ export function PreviewDock() {
               {/* 覆盖层额外:左下 收起 */}
               {mode === 'overlay' && (
                 <View style={styles.cornerBL} pointerEvents="auto">
-                  <IconBtn icon="✕" label="收起" tip="收起放大预览" place="top" onPress={() => setPreviewExpanded(false)} />
+                  <IconBtn
+                    icon="✕"
+                    label="收起"
+                    tip="收起放大预览"
+                    place="top"
+                    onPress={() => setPreviewExpanded(false)}
+                  />
                 </View>
               )}
             </>
@@ -239,7 +261,14 @@ const styles = StyleSheet.create({
   },
 
   cornerTL: { position: 'absolute', top: space.sm, left: space.sm, zIndex: z.dropdown },
-  cornerTR: { position: 'absolute', top: space.sm, right: space.sm, flexDirection: 'row', gap: space.xs, zIndex: z.panel },
+  cornerTR: {
+    position: 'absolute',
+    top: space.sm,
+    right: space.sm,
+    flexDirection: 'row',
+    gap: space.xs,
+    zIndex: z.panel,
+  },
   cornerBR: { position: 'absolute', bottom: space.sm, right: space.sm, zIndex: z.panel },
   cornerBL: { position: 'absolute', bottom: space.sm, left: space.sm, zIndex: z.panel },
 

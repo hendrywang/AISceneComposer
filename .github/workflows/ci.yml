@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate resource catalog
+        run: pnpm gen
+
+      - name: Ensure generated files are committed
+        run: git diff --exit-code -- packages/resource-library/src/generated/catalog.ts packages/resource-library/CREDITS.md
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm exec turbo run typecheck --force
+
+      - name: Test
+        run: pnpm test
+
+      - name: Check resource library
+        run: pnpm --filter @asc/resource-library check
+
+      - name: Build
+        run: pnpm build

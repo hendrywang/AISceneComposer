@@ -31,12 +31,12 @@ CREDITS.md                   # 自动生成的许可署名
 
 每个模型是一个 `ModelDef`:库面板卡片(`id`/`name`/`category`)+ 怎么渲染(`source`)+ 取景尺寸(`footprint`/`height`)。`source.kind`:
 
-| kind | 含义 | 关键数据 |
-|------|------|----------|
-| `gltf` | **真实 3D 资产(主推)** | `file`(本文件夹内的 .glb)+ 可选 `poses`(姿势名 → 静态 glTF);**必带 `license`** |
-| `primitive` | 盒子/薄片拼装(零工具占位) | `parts`(每个 `{ size, pos, color?, flat? }`) |
-| `human` | 参数化人体 | `body`(身高/胖瘦/肩/髋/头/发/胸 倍数) |
-| `roomShell` | 单面内向反向盒房间 | `variant: 'plain' \| 'balcony'` |
+| kind        | 含义                      | 关键数据                                                                       |
+| ----------- | ------------------------- | ------------------------------------------------------------------------------ |
+| `gltf`      | **真实 3D 资产(主推)**    | `file`(本文件夹内的 .glb)+ 可选 `poses`(姿势名 → 静态 glTF);**必带 `license`** |
+| `primitive` | 盒子/薄片拼装(零工具占位) | `parts`(每个 `{ size, pos, color?, flat? }`)                                   |
+| `human`     | 参数化人体                | `body`(身高/胖瘦/肩/髋/头/发/胸 倍数)                                          |
+| `roomShell` | 单面内向反向盒房间        | `variant: 'plain' \| 'balcony'`                                                |
 
 ---
 
@@ -47,12 +47,17 @@ CREDITS.md                   # 自动生成的许可署名
 
 ```json
 {
-  "id": "oak-chair", "name": "橡木椅", "type": "prop", "category": "家具",
-  "footprint": [0.5, 0.5], "height": 0.9,
+  "id": "oak-chair",
+  "name": "橡木椅",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [0.5, 0.5],
+  "height": 0.9,
   "license": { "license": "CC0-1.0", "source": "Kenney", "attribution": "Kenney Furniture Kit" },
   "source": { "kind": "gltf", "file": "model.glb" }
 }
 ```
+
 3. `pnpm gen` → 模型自动进库面板。发 PR。
 
 > 角色多姿势(D4):`"source": { "kind": "gltf", "file": "stand.glb", "poses": { "stand": "stand.glb", "sit": "sit.glb" } }`,把各姿势 `.glb` 一并放进文件夹。
@@ -63,12 +68,20 @@ CREDITS.md                   # 自动生成的许可署名
 只写 `meta.json`(照抄 `models/_template/meta.primitive.json`),`parts` 用盒子拼:
 
 ```json
-{ "id": "stool", "name": "凳子", "type": "prop", "category": "家具",
-  "footprint": [0.4, 0.4], "height": 0.45,
-  "source": { "kind": "primitive", "parts": [
-    { "size": [0.4, 0.05, 0.4], "pos": [0, 0.45, 0], "color": "#b08d57" }
-  ] } }
+{
+  "id": "stool",
+  "name": "凳子",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [0.4, 0.4],
+  "height": 0.45,
+  "source": {
+    "kind": "primitive",
+    "parts": [{ "size": [0.4, 0.05, 0.4], "pos": [0, 0.45, 0], "color": "#b08d57" }]
+  }
+}
 ```
+
 部件原点在脚底(y=0);`size=[宽,高,深]`,`pos`=部件中心。贴墙挂饰加 `"flat": true`(朝内单面薄片,随近墙隐藏)。
 
 ## 加一个体型 / 姿势 / 场景

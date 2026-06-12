@@ -133,9 +133,19 @@ function SelectionHudTracker() {
     }
     _proj.set(sel.position[0], sel.size[1], sel.position[2]).project(camera);
     const inFront = _proj.z < 1;
-    const sx = Math.max(12, Math.min((_proj.x * 0.5 + 0.5) * size.width + 28, Math.max(12, size.width - 232)));
-    const sy = Math.max(12, Math.min((1 - (_proj.y * 0.5 + 0.5)) * size.height - 28, Math.max(12, size.height - 210)));
-    if (Math.abs(sx - last.current.x) > 0.5 || Math.abs(sy - last.current.y) > 0.5 || inFront !== last.current.v) {
+    const sx = Math.max(
+      12,
+      Math.min((_proj.x * 0.5 + 0.5) * size.width + 28, Math.max(12, size.width - 232)),
+    );
+    const sy = Math.max(
+      12,
+      Math.min((1 - (_proj.y * 0.5 + 0.5)) * size.height - 28, Math.max(12, size.height - 210)),
+    );
+    if (
+      Math.abs(sx - last.current.x) > 0.5 ||
+      Math.abs(sy - last.current.y) > 0.5 ||
+      inFront !== last.current.v
+    ) {
       last.current = { x: sx, y: sy, v: inFront };
       setHud(sx, sy, inFront);
     }

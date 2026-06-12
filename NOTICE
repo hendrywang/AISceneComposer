@@ -1,0 +1,10 @@
+AI Scene Composer
+Copyright 2026 AI Scene Composer contributors
+
+This project is licensed under the Apache License, Version 2.0, except where
+otherwise noted.
+
+The 3D asset library may include third-party assets with their own licenses.
+Asset-specific license metadata lives in packages/resource-library/models/*/meta.json
+and is summarized in packages/resource-library/CREDITS.md. Do not assume every
+asset is covered by the repository code license.

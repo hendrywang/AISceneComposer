@@ -1,23 +1,35 @@
-# 贡献指南
+# Contributing
 
-感谢参与 AI Scene Composer！最常见也最受欢迎的贡献是**给资源库加模型**。
+Thanks for contributing to AI Scene Composer. The project is in alpha, so small focused pull requests are easiest to
+review.
 
-## 开发环境
+## Development Setup
 
 ```bash
+corepack enable
+corepack prepare pnpm@9.15.3 --activate
 pnpm install
-pnpm web          # 启动 Web 编辑器(会先自动跑资源库 gen)
-pnpm typecheck    # 全仓类型检查
+pnpm web
 ```
 
-## 加一个 3D 模型(最常见)
+Before opening a pull request, run:
 
-模型库在 [`packages/resource-library`](packages/resource-library/README.md),范式是**一个模型 = 一个文件夹**:
+```bash
+pnpm check
+```
 
-1. 在 `packages/resource-library/models/<你的-id>/` 新建文件夹。
-2. 放一个 `meta.json`(照抄 `models/_template/`);真实模型再放一个纹理内嵌的 `model.glb`。
-3. 跑 `pnpm gen`,模型自动进库面板。
-4. 跑校验,然后发 PR:
+If that is too broad for a focused change, run the relevant subset and explain what you skipped in the PR.
+
+## Common Contribution: Add a 3D Model
+
+The model library lives in [`packages/resource-library`](packages/resource-library/README.md).
+
+Pattern:
+
+1. Create `packages/resource-library/models/<your-id>/`.
+2. Add `meta.json` using one of the templates in `models/_template/`.
+3. For real glTF assets, add one self-contained `.glb` with embedded textures.
+4. Run:
 
 ```bash
 pnpm gen
@@ -25,17 +37,43 @@ pnpm --filter @asc/resource-library typecheck
 pnpm --filter @asc/resource-library check
 ```
 
-详细字段、四种 `source.kind`、姿势/场景的加法,见 **[资源库 README](packages/resource-library/README.md)**。
+Commit both your source files and the generated files:
 
-## 许可红线(务必遵守)
+- `packages/resource-library/src/generated/catalog.ts`
+- `packages/resource-library/CREDITS.md`
 
-- 真实 glTF 资产 `meta.json` **必须带 `license`**(校验会拦截缺失)。
-- **优先 CC0**(如 Kenney);CC-BY 需在 `attribution` 写清署名;来源不明 / 禁再分发的素材**不要提交**。
-- 许可信息会自动汇总进 `packages/resource-library/CREDITS.md`。
-- 用 `.glb`(纹理内嵌),不要 `.gltf` + 外部贴图(路径易断)。
+## Asset License Rules
 
-## PR 约定
+Asset licensing is stricter than code licensing.
 
-- 一个模型 / 一个主题 = 一个 PR,保持小而聚焦。
-- 提交前确保 `pnpm typecheck` 与资源库 `check` 通过。
-- 改了 `meta.json` 一定要跑 `pnpm gen` 并把 `src/generated/catalog.ts` 一并提交。
+- Prefer CC0 assets.
+- CC-BY assets must include author/source/attribution in `meta.json`.
+- Do not submit assets with unclear provenance or redistribution restrictions.
+- Do not submit user-uploaded local models from your own scene file unless you have redistribution rights.
+- Use `.glb` with embedded textures, not `.gltf` plus loose texture paths.
+
+The repository code is Apache-2.0, but model assets keep their own licenses.
+
+## Pull Request Guidelines
+
+- Keep one topic per PR.
+- Include screenshots or exported scene files for visual/editor changes.
+- Update docs for user-facing or contributor-facing changes.
+- Add tests for pure logic, data transformations, and resource checks.
+- Do not commit secrets, local `.env` files, generated `apps/client/public/models`, or private assets.
+
+## Code Style
+
+- TypeScript is strict.
+- Formatting is handled by Prettier.
+- Linting is handled by ESLint.
+- Tests use the Node test runner with `tsx`.
+
+Useful commands:
+
+```bash
+pnpm format
+pnpm lint
+pnpm test
+pnpm typecheck
+```

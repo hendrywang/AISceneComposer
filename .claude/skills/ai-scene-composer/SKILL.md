@@ -14,13 +14,13 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 
 ## 文档地图(`docs/`)
 
-| 文档 | 内容 |
-|------|------|
-| `development-plan.md` | **总纲**:问题、思路、决策表 D1–D17、架构、数据结构、路线图 |
-| `phase-1-tasks.md` | 阶段 1(最小编辑器 + Firebase)任务拆解 T1–T13,带验收标准 |
-| `project-structure.md` | monorepo 目录树、依赖、配置、初始化命令、8 个已知坑 |
+| 文档                       | 内容                                                                             |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| `development-plan.md`      | **总纲**:问题、思路、决策表 D1–D17、架构、数据结构、路线图                       |
+| `phase-1-tasks.md`         | 阶段 1(最小编辑器 + Firebase)任务拆解 T1–T13,带验收标准                          |
+| `project-structure.md`     | monorepo 目录树、依赖、配置、初始化命令、8 个已知坑                              |
 | `firebase-architecture.md` | Firebase 架构:经典 Hosting vs App Hosting、产品映射、rewrite→Cloud Run、安全规则 |
-| `asset-library.md` | 起步资产清单、FBX→glTF→Firebase 管线、许可策略 |
+| `asset-library.md`         | 起步资产清单、FBX→glTF→Firebase 管线、许可策略                                   |
 
 ## 已锁定决策(改动前先看,勿重新讨论)
 
@@ -48,19 +48,22 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 ## 已实现(代码,截至 2026-06-12)
 
 **前端编辑器**(`apps/client`,Expo web + R3F + drei + zustand)—— 已跑通,typecheck + web 打包零告警:
-- **数据驱动模型库** `editor/catalog.ts`:加模型 = 加数据;`ModelView` 按 source 分发(`human` / `furniture` / 预留 `gltf`)。
-- **参数化人体** `editor/Mannequin.tsx`:身高/围度/肩/髋/头/发型/胸部参数;6 体型预设;6 姿势(`editor/poses.ts`);**自动落地**(Box3 量最低点对齐 y=0)。性别特征:女=长发+胸部,男=短发+宽肩。
-- **家具图元套件** `editor/furniture.tsx`:床/柜/桌/椅/沙发/茶几/电视柜/书架/灯/绿植/黑板/课桌 + 门/窗/壁画/地毯 + 房间外壳。
-- **场景预设** `editor/scenes.ts`:卧室/客厅/教室,每面墙不同标志物(门/窗/画)给方位感;`loadScene` 一键载入;房间单例、不可选。
+
+- **数据驱动模型库** `packages/resource-library`:加模型 = 加 `models/<id>/meta.json`;`ModelView` 按 `source.kind` 分发(`human` / `primitive` / `roomShell` / `gltf`)。
+- **参数化人体** `editor/Mannequin.tsx` + `packages/resource-library/src/poses.ts`:身高/围度/肩/髋/头/发型/胸部参数;6 体型预设;6 姿势;**自动落地**(Box3 量最低点对齐 y=0)。
+- **家具图元套件** `packages/resource-library/models/*/meta.json`:床/柜/桌/椅/沙发/茶几/电视柜/书架/灯/绿植/黑板/课桌 + 门/窗/壁画/地毯 + 房间外壳。
+- **场景预设** `packages/resource-library/src/scenes.ts`:卧室/客厅/教室,每面墙不同标志物(门/窗/画)给方位感;`loadScene` 一键载入;房间单例、不可选。
 - **编辑交互** `editor/SceneView.tsx`:点选 + 地面光圈高亮;TransformControls 移动(锁地 XZ)/ 旋转(绕 Y)。状态在 `store/editorStore.ts`(modelId 驱动)。
 - **相机系统** `editor/CameraRig.tsx` + `camera.ts`:多机位存/切/删、FOV(广角75/标准50/长焦28)、电影预设(双人/过肩/仰/俯/特写,按选中角色 + 当前方位算位)。
 - **取景预览窗** `editor/Preview.tsx` + `cameraSync.ts`:右侧实时镜像机位;比例下拉(16:9…9:16);**上传底图**(设为 scene.background,预览比例随照片);**下载**导出 FHD(长边 1920,常量 `EXPORT_LONG_EDGE`)合成 PNG。
+- **本地分享/扩展** `editor/sceneFile.ts` + `importModel.ts` + `splitModel.ts`:保存/读取场景 JSON,导入 glTF/GLB 并归一化为自包含 GLB data URL,可按顶层部件拆分导入模型。
 
 **后端** `services/api`:Express + multer + firebase-admin + `@google/genai` 骨架;`POST /api/generate` 占位;`SKIP_AUTH=1` 本地跳鉴权。**真实出图未接通**。
 
 **共享类型** `packages/shared-types`:Scene/Actor/Prop/Camera/Asset/GenerateRequest。
 
 ### 关键技术坑 & 解法(改代码前必看)
+
 - 旋转过 180° 跳回 → 选中 group 用 **Euler 顺序 `YXZ`**(Y 为首轴),读回/回写一致。
 - 旋转/移动不保存 → TransformControls 用 **`onObjectChange`** 实时写回(不要只用 onMouseUp)。
 - 手柄停在原点 → 选中对象 = **底部 group + `object={group}`**(回调 ref+state),手柄落脚底。
@@ -70,6 +73,7 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 - 性能:R3F `frameloop="demand"` 按需渲染;预览靠 `cameraSync` 跨 canvas 同步机位。
 
 ### 尚未实现(下一步)
+
 - **T7→T9**:把「生成」接通(导出帧 → 后端 → Nano Banana → 回显);后端目前是骨架。
 - **Firebase 接入**(Auth/Firestore/Storage,D13)未做。
 - **角色一致性**(D5)、原生打包(D15)延后。
@@ -84,12 +88,12 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 
 ### 每张出图价格(@1024px)
 
-| 模型 | 别名 | 单价/张 | 备注 |
-|------|------|---------|------|
-| Gemini 3.1 Flash Image | **Nano Banana 2(当前默认)** | **~$0.067** | 推荐主用 |
-| Gemini 2.5 Flash Image | 旧版 Nano Banana | ~$0.039 | **2026-10-02 停用** |
-| Gemini 3 Pro Image | Nano Banana Pro | ~$0.134(4K ~$0.24) | 质量更高、更贵 |
-| Imagen 4 Fast | — | ~$0.02 | 备选最便宜 |
+| 模型                   | 别名                        | 单价/张            | 备注                |
+| ---------------------- | --------------------------- | ------------------ | ------------------- |
+| Gemini 3.1 Flash Image | **Nano Banana 2(当前默认)** | **~$0.067**        | 推荐主用            |
+| Gemini 2.5 Flash Image | 旧版 Nano Banana            | ~$0.039            | **2026-10-02 停用** |
+| Gemini 3 Pro Image     | Nano Banana Pro             | ~$0.134(4K ~$0.24) | 质量更高、更贵      |
+| Imagen 4 Fast          | —                           | ~$0.02             | 备选最便宜          |
 
 - 任何付费图像模型**无免费额度**;**批处理(batch)约半价**。
 - 分辨率影响价格(3.1 Flash:512px $0.045 / 1K $0.067 / 2K $0.101 / 4K $0.151)。
@@ -98,11 +102,11 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 
 假设:500 张/月 + 轻量 Firestore/Storage/Hosting + Cloud Run 闲置缩到零。
 
-| 项 | 成本 |
-|----|------|
-| 出图 500 张(3.1 Flash @$0.067) | **~$33.5** |
-| Firestore / Storage / Hosting / Auth / App Check / Cloud Run / Cloud Tasks | ~$0(均在免费额度) |
-| **合计** | **~$33/月**(区间 $20–67,取决于选哪个模型) |
+| 项                                                                         | 成本                                      |
+| -------------------------------------------------------------------------- | ----------------------------------------- |
+| 出图 500 张(3.1 Flash @$0.067)                                             | **~$33.5**                                |
+| Firestore / Storage / Hosting / Auth / App Check / Cloud Run / Cloud Tasks | ~$0(均在免费额度)                         |
+| **合计**                                                                   | **~$33/月**(区间 $20–67,取决于选哪个模型) |
 
 ### 拇指法则与控成本
 

@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible problem in the editor, API, or resource pipeline.
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a bug. Please include enough detail to reproduce it.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. Click ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS, browser, Node version, pnpm version, device if relevant.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      render: shell

@@ -5,15 +5,7 @@ import { RoomShell } from './RoomShell';
 import { GltfModel } from './Gltf';
 
 /** 统一渲染器:按模型来源分发(程序化人体 / 图元 / 房间壳 / glTF)。内容原点在脚底(y=0)。 */
-export function ModelView({
-  def,
-  color,
-  poseId,
-}: {
-  def: ModelDef;
-  color: string;
-  poseId?: string;
-}) {
+export function ModelView({ def, color, poseId }: { def: ModelDef; color: string; poseId?: string }) {
   const s = def.source;
   if (s.kind === 'human') {
     return <Mannequin body={s.body} pose={poseId ?? 'stand'} color={color} />;

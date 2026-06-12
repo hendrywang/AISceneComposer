@@ -13,24 +13,43 @@ const CATEGORIES = CATALOG.reduce<string[]>(
 
 /** 资产图标(MVP:emoji)。按 id 命中,按 category 兜底。后续可一行换成真实 3D 缩略图。 */
 const GLYPH: Record<string, string> = {
-  'man-tall': '🧍', 'man-heavy': '🧍', 'man-slim': '🧍',
-  woman: '🧍‍♀️', 'woman-curvy': '🧍‍♀️', kid: '🧒',
-  bed: '🛏️', nightstand: '🗄️', wardrobe: '🚪', desk: '🪑', chair: '🪑', sofa: '🛋️',
-  coffeeTable: '🟫', tvStand: '📺', bookshelf: '📚', lamp: '💡', plant: '🪴',
-  blackboard: '⬛', studentDesk: '🪑',
-  door: '🚪', window: '🪟', painting: '🖼️', rug: '🟪', room: '🏠',
+  'man-tall': '🧍',
+  'man-heavy': '🧍',
+  'man-slim': '🧍',
+  woman: '🧍‍♀️',
+  'woman-curvy': '🧍‍♀️',
+  kid: '🧒',
+  bed: '🛏️',
+  nightstand: '🗄️',
+  wardrobe: '🚪',
+  desk: '🪑',
+  chair: '🪑',
+  sofa: '🛋️',
+  coffeeTable: '🟫',
+  tvStand: '📺',
+  bookshelf: '📚',
+  lamp: '💡',
+  plant: '🪴',
+  blackboard: '⬛',
+  studentDesk: '🪑',
+  door: '🚪',
+  window: '🪟',
+  painting: '🖼️',
+  rug: '🟪',
+  room: '🏠',
 };
 const CATEGORY_GLYPH: Record<string, string> = {
-  人物: '👤', 家具: '🛋️', 门窗装饰: '🚪', 场景元素: '🏠', 我的模型: '📦',
+  人物: '👤',
+  家具: '🛋️',
+  门窗装饰: '🚪',
+  场景元素: '🏠',
+  我的模型: '📦',
 };
 const glyphFor = (d: ModelDef) => GLYPH[d.id] ?? CATEGORY_GLYPH[d.category] ?? '⬜';
 
 function AssetCard({ d, width, onAdd }: { d: ModelDef; width: number; onAdd: () => void }) {
   return (
-    <Pressable
-      onPress={onAdd}
-      style={({ pressed }) => [styles.card, { width }, pressed && styles.pressed]}
-    >
+    <Pressable onPress={onAdd} style={({ pressed }) => [styles.card, { width }, pressed && styles.pressed]}>
       <Text style={styles.glyph}>{glyphFor(d)}</Text>
       <Text style={styles.cardLabel} numberOfLines={1}>
         {d.name}
@@ -54,7 +73,7 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
 
   const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
 
-  const { cols, cardW } = useMemo(() => {
+  const { cardW } = useMemo(() => {
     const gap = space.md;
     const minCard = 84;
     const c = Math.max(2, Math.floor((width + gap) / (minCard + gap))) || 2;
@@ -70,7 +89,10 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
     () => [...CATALOG, ...userModels].filter((d) => d.category === activeCat),
     [activeCat, userModels],
   );
-  const afterImport = () => { setActiveCat('我的模型'); onItemAdded?.(); };
+  const afterImport = () => {
+    setActiveCat('我的模型');
+    onItemAdded?.();
+  };
 
   return (
     <View style={styles.wrap} onLayout={onLayout}>
@@ -78,14 +100,25 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
       <Text style={styles.section}>场景预设</Text>
       <View style={styles.chipRow}>
         {SCENES.map((sc) => (
-          <Chip key={sc.id} label={sc.name} onPress={() => { loadScene(sc.id); onItemAdded?.(); }} />
+          <Chip
+            key={sc.id}
+            label={sc.name}
+            onPress={() => {
+              loadScene(sc.id);
+              onItemAdded?.();
+            }}
+          />
         ))}
       </View>
 
       {/* 分类 Tab + 导入模型(单按钮,自动判别 .glb / .gltf) */}
       <View style={styles.sectionRow}>
         <Text style={styles.section}>资产库</Text>
-        <Pressable onPress={() => importModel(afterImport)} hitSlop={6} style={({ pressed }) => [styles.importBtn, pressed && styles.pressed]}>
+        <Pressable
+          onPress={() => importModel(afterImport)}
+          hitSlop={6}
+          style={({ pressed }) => [styles.importBtn, pressed && styles.pressed]}
+        >
           <Text style={styles.importText}>⬆ 导入模型</Text>
         </Pressable>
       </View>
@@ -98,7 +131,15 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
       {/* 卡片网格 */}
       <View style={styles.grid}>
         {items.map((d) => (
-          <AssetCard key={d.id} d={d} width={cardW} onAdd={() => { add(d.id); onItemAdded?.(); }} />
+          <AssetCard
+            key={d.id}
+            d={d}
+            width={cardW}
+            onAdd={() => {
+              add(d.id);
+              onItemAdded?.();
+            }}
+          />
         ))}
       </View>
     </View>

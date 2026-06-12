@@ -2,6 +2,8 @@
   "name": "ai-scene-composer",
   "private": true,
   "version": "0.0.0",
+  "description": "A lightweight 3D virtual set and camera blocking tool for AI image generation.",
+  "license": "Apache-2.0",
   "packageManager": "pnpm@9.15.3",
   "engines": {
     "node": ">=20"
@@ -10,13 +12,24 @@
     "gen": "pnpm --filter @asc/resource-library gen",
     "dev": "pnpm gen && turbo run dev",
     "build": "pnpm gen && turbo run build",
+    "build:web": "pnpm gen && pnpm --filter @asc/client build:web",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --import tsx --test apps/client/src/editor/camera.test.ts apps/client/src/store/editorStore.test.ts packages/resource-library/src/catalog.test.ts",
+    "check": "pnpm gen && pnpm format:check && pnpm lint && pnpm exec turbo run typecheck --force && pnpm test && pnpm --filter @asc/resource-library check && pnpm build",
+    "ci": "pnpm check",
     "web": "pnpm gen && pnpm --filter @asc/client web",
     "api": "pnpm --filter @asc/api dev"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.3",
+    "eslint": "^10.4.1",
+    "prettier": "^3.8.4",
     "turbo": "^2.9.18",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.61.0"
   }
 }

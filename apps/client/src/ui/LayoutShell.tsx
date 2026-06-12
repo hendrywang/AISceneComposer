@@ -79,7 +79,10 @@ function TabletChrome() {
       <View style={styles.topBar} pointerEvents="box-none">
         <Panel>
           <View style={styles.topRow}>
-            <Pressable onPress={toggleLibrary} style={({ pressed }) => [styles.menuBtn, pressed && styles.pressed]}>
+            <Pressable
+              onPress={toggleLibrary}
+              style={({ pressed }) => [styles.menuBtn, pressed && styles.pressed]}
+            >
               <Text style={styles.menuIcon}>☰</Text>
               <Text style={styles.menuLabel}>资产</Text>
             </Pressable>
@@ -143,7 +146,13 @@ function PhoneChrome() {
       {/* 底部 Tab 栏 */}
       <View style={[styles.tabBar, { paddingBottom: safeBottom }]} pointerEvents="auto">
         <Tab icon="➕" label="添加" active={activeSheet === 'add'} onPress={() => open('add')} />
-        <Tab icon="🎭" label="姿势" active={activeSheet === 'pose'} disabled={!actor} onPress={() => open('pose')} />
+        <Tab
+          icon="🎭"
+          label="姿势"
+          active={activeSheet === 'pose'}
+          disabled={!actor}
+          onPress={() => open('pose')}
+        />
         <Tab icon="📷" label="机位" active={activeSheet === 'camera'} onPress={() => open('camera')} />
         <Tab icon="🖼" label="出图" active={previewExpanded} onPress={openFrame} />
       </View>
@@ -216,12 +225,26 @@ const styles = StyleSheet.create({
   /* tablet */
   topBar: { position: 'absolute', top: safeTop, left: space.lg, marginTop: space.lg },
   topRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  menuBtn: { flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingHorizontal: space.sm, paddingVertical: space.sm, minHeight: 44 },
+  menuBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.xs,
+    paddingHorizontal: space.sm,
+    paddingVertical: space.sm,
+    minHeight: 44,
+  },
   menuIcon: { color: color.text, fontSize: font.title },
   menuLabel: { color: color.text, fontSize: font.btn, fontWeight: font.weightBtn },
   vsep: { width: 1, height: 22, backgroundColor: color.border, marginHorizontal: space.xs },
   tabletInspector: { position: 'absolute', top: safeTop, left: space.lg, right: space.lg, marginTop: 72 },
-  bottomCenter: { position: 'absolute', left: space.lg, right: space.lg, bottom: 0, paddingBottom: space.lg, alignItems: 'center' },
+  bottomCenter: {
+    position: 'absolute',
+    left: space.lg,
+    right: space.lg,
+    bottom: 0,
+    paddingBottom: space.lg,
+    alignItems: 'center',
+  },
 
   /* phone */
   phoneTop: { position: 'absolute', top: safeTop, left: space.lg, marginTop: space.lg },
@@ -236,7 +259,14 @@ const styles = StyleSheet.create({
     borderColor: color.border,
     zIndex: z.toolbar,
   },
-  tab: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: space.sm, minHeight: layout.tabBarH, gap: 2 },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: space.sm,
+    minHeight: layout.tabBarH,
+    gap: 2,
+  },
   tabDisabled: { opacity: 0.35 },
   tabIcon: { fontSize: 20 },
   tabLabel: { color: color.textDim, fontSize: font.hint, fontWeight: font.weightBtn },
