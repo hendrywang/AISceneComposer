@@ -1,0 +1,25 @@
+# deps
+node_modules/
+
+# build outputs
+dist/
+build/
+web-build/
+.turbo/
+
+# expo
+.expo/
+apps/client/.expo/
+
+# env / secrets
+.env
+.env.local
+*.local
+service-account*.json
+
+# logs
+*.log
+npm-debug.log*
+
+# os
+.DS_Store
