@@ -1,0 +1,18 @@
+{
+  "id": "nightstand",
+  "name": "床头柜",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [0.45, 0.4],
+  "height": 0.5,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [0.45, 0.5, 0.4],
+        "pos": [0, 0.25, 0],
+        "color": "#b08d57"
+      }
+    ]
+  }
+}

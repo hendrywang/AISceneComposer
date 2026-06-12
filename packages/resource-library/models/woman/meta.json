@@ -1,0 +1,19 @@
+{
+  "id": "woman",
+  "name": "女性",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.66,
+      "build": 0.95,
+      "shoulder": 0.9,
+      "hip": 1.05,
+      "head": 1,
+      "hair": "#3a2a1a",
+      "hairStyle": "long",
+      "bust": 0.55
+    }
+  }
+}

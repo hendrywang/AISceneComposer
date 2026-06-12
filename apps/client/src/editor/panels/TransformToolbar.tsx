@@ -1,5 +1,8 @@
 import { View, StyleSheet } from 'react-native';
+import { getDef } from '@asc/resource-library';
 import { useEditor } from '../../store/editorStore';
+import { saveSceneToFile, loadSceneFromFile } from '../sceneFile';
+import { splitSelected } from '../splitModel';
 import { Button } from '../../ui/primitives/Button';
 import { color, space } from '../../ui/theme';
 
@@ -12,6 +15,13 @@ export function TransformToolbar({ compact }: { compact?: boolean }) {
   const clear = useEditor((s) => s.clear);
   const selectedId = useEditor((s) => s.selectedId);
   const hasObjects = useEditor((s) => s.objects.length > 0);
+
+  // 选中的是 glTF / 导入模型时,才显示「拆分」
+  const objects = useEditor((s) => s.objects);
+  const userModels = useEditor((s) => s.userModels);
+  const sel = objects.find((o) => o.id === selectedId);
+  const selDef = sel ? (userModels.find((m) => m.id === sel.modelId) ?? getDef(sel.modelId)) : undefined;
+  const canSplit = selDef?.source.kind === 'gltf';
 
   return (
     <View style={styles.row}>
@@ -44,6 +54,16 @@ export function TransformToolbar({ compact }: { compact?: boolean }) {
         tooltipPlace="bottom"
         onPress={duplicateSelected}
       />
+      {canSplit && (
+        <Button
+          label="拆分"
+          icon="✂️"
+          compact={compact}
+          tooltip="把导入的模型拆成各部件,便于单独删除/移动"
+          tooltipPlace="bottom"
+          onPress={splitSelected}
+        />
+      )}
       <Button
         label="删除"
         icon="🗑"
@@ -62,6 +82,25 @@ export function TransformToolbar({ compact }: { compact?: boolean }) {
         tooltip="清空整个场景,从头开始"
         tooltipPlace="bottom"
         onPress={clear}
+      />
+      <View style={styles.sep} />
+      {/* 保存 = 把当前构图(含机位/底图)存成 .json 文件;读取 = 从文件还原 */}
+      <Button
+        label="保存"
+        icon="💾"
+        compact={compact}
+        disabled={!hasObjects}
+        tooltip="保存当前场景为文件(.json)"
+        tooltipPlace="bottom"
+        onPress={saveSceneToFile}
+      />
+      <Button
+        label="读取"
+        icon="📂"
+        compact={compact}
+        tooltip="从文件读取场景(.json)"
+        tooltipPlace="bottom"
+        onPress={loadSceneFromFile}
       />
     </View>
   );

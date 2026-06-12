@@ -1,0 +1,25 @@
+{
+  "id": "wallTV",
+  "name": "壁挂电视",
+  "type": "prop",
+  "category": "门窗装饰",
+  "footprint": [1.6, 0.1],
+  "height": 1.9,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "flat": true,
+        "size": [1.6, 0.95, 0],
+        "pos": [0, 1.4, 0],
+        "color": "#15171c"
+      },
+      {
+        "flat": true,
+        "size": [1.5, 0.85, 0],
+        "pos": [0, 1.4, 0.01],
+        "color": "#2b3340"
+      }
+    ]
+  }
+}

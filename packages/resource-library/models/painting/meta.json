@@ -1,0 +1,25 @@
+{
+  "id": "painting",
+  "name": "壁画",
+  "type": "prop",
+  "category": "门窗装饰",
+  "footprint": [1.2, 0.1],
+  "height": 1.95,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "flat": true,
+        "size": [1.2, 0.85, 0],
+        "pos": [0, 1.5, 0],
+        "color": "#6b5036"
+      },
+      {
+        "flat": true,
+        "size": [1.05, 0.7, 0],
+        "pos": [0, 1.5, 0.01],
+        "color": "#8aa9b8"
+      }
+    ]
+  }
+}

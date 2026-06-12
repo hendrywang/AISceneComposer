@@ -4,14 +4,15 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Grid, OrbitControls, TransformControls, GizmoHelper, GizmoViewport } from '@react-three/drei';
 import { useEditor, type EditorObject } from '../store/editorStore';
 import { useUI } from '../ui/uiStore';
-import { getDef } from './catalog';
+import { getDef } from '@asc/resource-library';
 import { ModelView } from './ModelView';
 import CameraRig from './CameraRig';
 import { cameraSync } from './cameraSync';
 
-/** 物体内容:由 catalog 决定怎么渲染(人体/家具/将来 glTF)。父 group 原点在脚底(y=0)。 */
+/** 物体内容:按 modelId 解析(运行时上传的 userModels 优先,再查静态 catalog)。父 group 原点在脚底(y=0)。 */
 export function ObjectContent({ obj }: { obj: EditorObject }) {
-  const def = getDef(obj.modelId);
+  const userModels = useEditor((s) => s.userModels);
+  const def = userModels.find((m) => m.id === obj.modelId) ?? getDef(obj.modelId);
   if (!def) return null;
   return <ModelView def={def} color={obj.color} poseId={obj.poseId} />;
 }

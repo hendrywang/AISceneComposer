@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useEditor } from '../../store/editorStore';
 import { useUI } from '../../ui/uiStore';
-import { POSE_OPTIONS } from '../poses';
+import { POSE_OPTIONS } from '@asc/resource-library';
 import { useHoverTip, TooltipBubble } from '../../ui/primitives/Tooltip';
 import { color, space, radius, font, z, elevation } from '../../ui/theme';
 

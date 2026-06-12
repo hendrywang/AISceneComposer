@@ -1,0 +1,31 @@
+{
+  "id": "door",
+  "name": "门",
+  "type": "prop",
+  "category": "门窗装饰",
+  "footprint": [0.95, 0.14],
+  "height": 2.05,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "flat": true,
+        "size": [0.95, 2.05, 0],
+        "pos": [0, 1.025, 0],
+        "color": "#7a5a3a"
+      },
+      {
+        "flat": true,
+        "size": [0.82, 1.9, 0],
+        "pos": [0, 1.03, 0.01],
+        "color": "#8a6a44"
+      },
+      {
+        "flat": true,
+        "size": [0.1, 0.1, 0],
+        "pos": [0.34, 1, 0.02],
+        "color": "#d9c27a"
+      }
+    ]
+  }
+}

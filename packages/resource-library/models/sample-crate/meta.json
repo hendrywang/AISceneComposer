@@ -1,0 +1,16 @@
+{
+  "id": "sample-crate",
+  "name": "样例木箱",
+  "type": "prop",
+  "category": "家具",
+  "tags": ["sample", "gltf", "crate"],
+  "footprint": [1, 1],
+  "height": 1,
+  "license": {
+    "license": "CC0-1.0",
+    "source": "Khronos glTF Sample Assets",
+    "author": "Public",
+    "attribution": "BoxVertexColors (CC0 1.0 Universal)"
+  },
+  "source": { "kind": "gltf", "file": "model.glb" }
+}

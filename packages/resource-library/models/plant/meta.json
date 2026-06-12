@@ -1,0 +1,23 @@
+{
+  "id": "plant",
+  "name": "绿植",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [0.6, 0.6],
+  "height": 1,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [0.3, 0.3, 0.3],
+        "pos": [0, 0.15, 0],
+        "color": "#8a5a3a"
+      },
+      {
+        "size": [0.6, 0.7, 0.6],
+        "pos": [0, 0.65, 0],
+        "color": "#3f7d3f"
+      }
+    ]
+  }
+}

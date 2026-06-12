@@ -1,0 +1,28 @@
+{
+  "id": "pendant",
+  "name": "吊灯",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [0.5, 0.5],
+  "height": 2.95,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [0.03, 0.62, 0.03],
+        "pos": [0, 2.64, 0],
+        "color": "#1f2937"
+      },
+      {
+        "size": [0.48, 0.26, 0.48],
+        "pos": [0, 2.32, 0],
+        "color": "#f3e7c4"
+      },
+      {
+        "size": [0.3, 0.06, 0.3],
+        "pos": [0, 2.18, 0],
+        "color": "#fff4d6"
+      }
+    ]
+  }
+}

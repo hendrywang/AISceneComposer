@@ -1,21 +1,11 @@
-/** 关节名(程序化人体的可旋转关节) */
-export type JointName =
-  | 'hipL'
-  | 'hipR'
-  | 'kneeL'
-  | 'kneeR'
-  | 'shoulderL'
-  | 'shoulderR'
-  | 'elbowL'
-  | 'elbowR'
-  | 'spine'
-  | 'neck';
-
-/** 一个姿势 = 若干关节的欧拉角(弧度);未列出的关节为 [0,0,0](默认直立) */
-export type Pose = Partial<Record<JointName, [number, number, number]>>;
+import type { Pose } from './types';
 
 const HALF = Math.PI / 2;
 
+/**
+ * 姿势库:姿势名 → 关节欧拉角(弧度)。未列出的关节默认 [0,0,0](直立)。
+ * 想加一个姿势?复制一条改关节角即可(关节名见 types.ts 的 JointName),再在 POSE_OPTIONS 加一行给 UI。
+ */
 export const POSES: Record<string, Pose> = {
   stand: {},
   walk: {
@@ -49,6 +39,7 @@ export const POSES: Record<string, Pose> = {
   },
 };
 
+/** 姿势选择器的展示项(id 必须是 POSES 的键) */
 export const POSE_OPTIONS: { id: string; label: string }[] = [
   { id: 'stand', label: '站立' },
   { id: 'walk', label: '走' },

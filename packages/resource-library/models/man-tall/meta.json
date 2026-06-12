@@ -1,0 +1,17 @@
+{
+  "id": "man-tall",
+  "name": "高个男",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.85,
+      "build": 1,
+      "shoulder": 1.1,
+      "hip": 0.95,
+      "head": 1,
+      "hair": "#2a2a2a"
+    }
+  }
+}

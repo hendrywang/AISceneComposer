@@ -1,0 +1,17 @@
+{
+  "id": "kid",
+  "name": "儿童",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.2,
+      "build": 0.95,
+      "shoulder": 0.9,
+      "hip": 0.95,
+      "head": 1.25,
+      "hair": "#2a2a2a"
+    }
+  }
+}

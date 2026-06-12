@@ -1,18 +1,6 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
-import { POSES, type JointName } from './poses';
-
-/** 人体参数:用倍数控制体型,实现高矮胖瘦/男女/儿童等变体 */
-export interface BodyParams {
-  height: number; // 身高 m
-  build: number; // 围度(胖瘦)倍数:0.8 瘦 ~ 1.4 胖
-  shoulder: number; // 肩宽倍数
-  hip: number; // 髋宽倍数
-  head: number; // 头大小倍数(儿童偏大)
-  hair?: string; // 发色(可选)
-  hairStyle?: 'short' | 'long'; // 发型:短发 / 长发(默认短)
-  bust?: number; // 胸部大小(女性特征;省略/0 = 平)
-}
+import { POSES, type JointName, type BodyParams } from '@asc/resource-library';
 
 function proportions(b: BodyParams) {
   const H = b.height;

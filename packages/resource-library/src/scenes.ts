@@ -1,22 +1,14 @@
+import type { ScenePreset } from './types';
+
 /**
- * 场景预设 = 房间壳 + 家具/门窗预置排布。
- * 房间是「单面内向虚拟布景」(furniture.tsx 的 RoomShell):四壁+地+天花,从任意角度透视入内。
- * 关键:四面墙各有不同标志物(门/窗/画/挂钟/电视/黑板…)→ 转到任意方向都有方位参照与背景;
+ * 场景预设 = 房间壳 + 家具/门窗的预置排布(库内置的「起手式」,只读)。
+ * 注意:这是精简的摆位数据(只有 modelId + 位置 + 朝向),不含颜色/姿势/机位;
+ *       用户自己摆的、可再编辑的「构图存档」是另一回事 → 映射 shared-types 的 Scene。
+ *
+ * 关键:四面墙各有不同标志物(门/窗/画/钟/电视/黑板…)→ 转到任意方向都有方位参照与背景;
  *       并用高低错落(高柜/书架/绿植/吊灯 vs 矮桌/地毯)制造前中后景视差。
  * 靠墙件朝向:后墙 rotationY=0;左墙 +90°(L);右墙 -90°(R);前墙 180°(F)。
  */
-export interface Placement {
-  modelId: string;
-  position: [number, number, number];
-  rotationY?: number;
-}
-
-export interface ScenePreset {
-  id: string;
-  name: string;
-  placements: Placement[];
-}
-
 const L = Math.PI / 2; // 左墙朝向
 const R = -Math.PI / 2; // 右墙朝向
 const B = Math.PI; // 家具背对(180°)

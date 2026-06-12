@@ -1,0 +1,17 @@
+{
+  "id": "man-heavy",
+  "name": "壮硕男",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.75,
+      "build": 1.35,
+      "shoulder": 1.15,
+      "hip": 1.1,
+      "head": 1,
+      "hair": "#2a2a2a"
+    }
+  }
+}

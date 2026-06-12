@@ -1,0 +1,16 @@
+{
+  "id": "my-model",
+  "name": "我的模型",
+  "type": "prop",
+  "category": "家具",
+  "tags": ["example"],
+  "footprint": [0.5, 0.5],
+  "height": 0.9,
+  "license": {
+    "license": "CC0-1.0",
+    "source": "Kenney",
+    "author": "Kenney",
+    "attribution": "来源说明(写进 CREDITS)"
+  },
+  "source": { "kind": "gltf", "file": "model.glb" }
+}

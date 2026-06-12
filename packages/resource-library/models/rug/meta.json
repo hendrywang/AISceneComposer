@@ -1,0 +1,18 @@
+{
+  "id": "rug",
+  "name": "地毯",
+  "type": "prop",
+  "category": "门窗装饰",
+  "footprint": [2.4, 1.7],
+  "height": 0.03,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [2.4, 0.03, 1.7],
+        "pos": [0, 0.015, 0],
+        "color": "#9e6b6b"
+      }
+    ]
+  }
+}

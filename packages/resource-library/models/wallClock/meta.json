@@ -1,0 +1,37 @@
+{
+  "id": "wallClock",
+  "name": "挂钟",
+  "type": "prop",
+  "category": "门窗装饰",
+  "footprint": [0.5, 0.1],
+  "height": 1.95,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "flat": true,
+        "size": [0.52, 0.52, 0],
+        "pos": [0, 1.7, 0],
+        "color": "#3a3a40"
+      },
+      {
+        "flat": true,
+        "size": [0.42, 0.42, 0],
+        "pos": [0, 1.7, 0.01],
+        "color": "#efece4"
+      },
+      {
+        "flat": true,
+        "size": [0.04, 0.18, 0],
+        "pos": [0, 1.74, 0.02],
+        "color": "#222"
+      },
+      {
+        "flat": true,
+        "size": [0.13, 0.04, 0],
+        "pos": [0.04, 1.7, 0.02],
+        "color": "#222"
+      }
+    ]
+  }
+}

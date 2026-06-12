@@ -1,0 +1,28 @@
+{
+  "id": "blackboard",
+  "name": "黑板",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [2, 0.2],
+  "height": 1.8,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [2, 1, 0.05],
+        "pos": [0, 1.3, 0],
+        "color": "#1f3b2f"
+      },
+      {
+        "size": [0.06, 1.3, 0.06],
+        "pos": [-0.95, 0.65, 0],
+        "color": "#b08d57"
+      },
+      {
+        "size": [0.06, 1.3, 0.06],
+        "pos": [0.95, 0.65, 0],
+        "color": "#b08d57"
+      }
+    ]
+  }
+}

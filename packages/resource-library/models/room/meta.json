@@ -1,0 +1,12 @@
+{
+  "id": "room",
+  "name": "空房间",
+  "type": "environment",
+  "category": "场景元素",
+  "footprint": [6, 6],
+  "height": 3,
+  "source": {
+    "kind": "roomShell",
+    "variant": "plain"
+  }
+}

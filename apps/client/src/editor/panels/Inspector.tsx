@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useEditor, type EditorObject } from '../../store/editorStore';
-import { POSE_OPTIONS } from '../poses';
+import { POSE_OPTIONS } from '@asc/resource-library';
 import { Button } from '../../ui/primitives/Button';
 import { color, space, font } from '../../ui/theme';
 

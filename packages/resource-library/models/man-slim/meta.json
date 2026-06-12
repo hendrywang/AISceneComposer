@@ -1,0 +1,17 @@
+{
+  "id": "man-slim",
+  "name": "瘦高男",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.78,
+      "build": 0.82,
+      "shoulder": 1,
+      "hip": 0.9,
+      "head": 1,
+      "hair": "#2a2a2a"
+    }
+  }
+}

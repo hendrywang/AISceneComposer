@@ -1,8 +1,10 @@
+import type { ModelDef } from '@asc/resource-library';
 import { Mannequin } from './Mannequin';
-import { Furniture } from './furniture';
-import type { ModelDef } from './catalog';
+import { PrimitiveModel } from './Primitive';
+import { RoomShell } from './RoomShell';
+import { GltfModel } from './Gltf';
 
-/** 统一渲染器:按模型来源分发(程序化人体 / 家具图元 / 将来 glTF)。内容原点在脚底(y=0)。 */
+/** 统一渲染器:按模型来源分发(程序化人体 / 图元 / 房间壳 / glTF)。内容原点在脚底(y=0)。 */
 export function ModelView({
   def,
   color,
@@ -16,9 +18,14 @@ export function ModelView({
   if (s.kind === 'human') {
     return <Mannequin body={s.body} pose={poseId ?? 'stand'} color={color} />;
   }
-  if (s.kind === 'furniture') {
-    return <Furniture shapeId={s.shapeId} color={color} />;
+  if (s.kind === 'primitive') {
+    return <PrimitiveModel parts={s.parts} color={color} />;
   }
-  // s.kind === 'gltf':T3 接入真实模型时实现(useGLTF + Clone + Suspense)
+  if (s.kind === 'roomShell') {
+    return <RoomShell variant={s.variant} />;
+  }
+  if (s.kind === 'gltf') {
+    return <GltfModel file={s.file} poseFile={poseId ? s.poses?.[poseId] : undefined} />;
+  }
   return null;
 }

@@ -1,0 +1,19 @@
+{
+  "id": "woman-curvy",
+  "name": "丰满女",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.64,
+      "build": 1.15,
+      "shoulder": 0.88,
+      "hip": 1.2,
+      "head": 1,
+      "hair": "#3a2a1a",
+      "hairStyle": "long",
+      "bust": 0.75
+    }
+  }
+}

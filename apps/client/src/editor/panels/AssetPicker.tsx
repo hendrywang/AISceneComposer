@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import { useEditor } from '../../store/editorStore';
-import { CATALOG, type ModelDef } from '../catalog';
-import { SCENES } from '../scenes';
+import { CATALOG, SCENES, type ModelDef } from '@asc/resource-library';
+import { importModel } from '../importModel';
 import { Chip } from '../../ui/primitives/Chip';
 import { color, space, radius, font } from '../../ui/theme';
 
@@ -21,7 +21,7 @@ const GLYPH: Record<string, string> = {
   door: '🚪', window: '🪟', painting: '🖼️', rug: '🟪', room: '🏠',
 };
 const CATEGORY_GLYPH: Record<string, string> = {
-  人物: '👤', 家具: '🛋️', 门窗装饰: '🚪', 场景元素: '🏠',
+  人物: '👤', 家具: '🛋️', 门窗装饰: '🚪', 场景元素: '🏠', 我的模型: '📦',
 };
 const glyphFor = (d: ModelDef) => GLYPH[d.id] ?? CATEGORY_GLYPH[d.category] ?? '⬜';
 
@@ -47,6 +47,7 @@ function AssetCard({ d, width, onAdd }: { d: ModelDef; width: number; onAdd: () 
 export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
   const add = useEditor((s) => s.add);
   const loadScene = useEditor((s) => s.loadScene);
+  const userModels = useEditor((s) => s.userModels);
 
   const [activeCat, setActiveCat] = useState(CATEGORIES[0]!);
   const [width, setWidth] = useState(0);
@@ -60,7 +61,16 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
     return { cols: c, cardW: width > 0 ? (width - gap * (c - 1)) / c : minCard };
   }, [width]);
 
-  const items = CATALOG.filter((d) => d.category === activeCat);
+  const categories = useMemo(() => {
+    const cats = [...CATEGORIES];
+    for (const m of userModels) if (!cats.includes(m.category)) cats.push(m.category);
+    return cats;
+  }, [userModels]);
+  const items = useMemo(
+    () => [...CATALOG, ...userModels].filter((d) => d.category === activeCat),
+    [activeCat, userModels],
+  );
+  const afterImport = () => { setActiveCat('我的模型'); onItemAdded?.(); };
 
   return (
     <View style={styles.wrap} onLayout={onLayout}>
@@ -72,10 +82,15 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
         ))}
       </View>
 
-      {/* 分类 Tab */}
-      <Text style={styles.section}>资产库</Text>
+      {/* 分类 Tab + 导入模型(单按钮,自动判别 .glb / .gltf) */}
+      <View style={styles.sectionRow}>
+        <Text style={styles.section}>资产库</Text>
+        <Pressable onPress={() => importModel(afterImport)} hitSlop={6} style={({ pressed }) => [styles.importBtn, pressed && styles.pressed]}>
+          <Text style={styles.importText}>⬆ 导入模型</Text>
+        </Pressable>
+      </View>
       <View style={styles.chipRow}>
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <Chip key={cat} label={cat} active={cat === activeCat} onPress={() => setActiveCat(cat)} />
         ))}
       </View>
@@ -93,6 +108,16 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
 const styles = StyleSheet.create({
   wrap: { gap: space.sm },
   section: { color: color.textFaint, fontSize: font.label, fontWeight: font.weightBtn, marginTop: space.sm },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  importBtn: {
+    marginTop: space.sm,
+    paddingHorizontal: space.sm,
+    paddingVertical: space.xs,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: color.accent,
+  },
+  importText: { color: color.accent, fontSize: font.label, fontWeight: font.weightBtn },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.md, marginTop: space.xs },
   card: {

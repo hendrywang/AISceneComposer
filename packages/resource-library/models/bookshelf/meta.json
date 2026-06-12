@@ -1,0 +1,28 @@
+{
+  "id": "bookshelf",
+  "name": "书架",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [0.9, 0.3],
+  "height": 1.8,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [0.9, 1.8, 0.3],
+        "pos": [0, 0.9, 0],
+        "color": "#b08d57"
+      },
+      {
+        "size": [0.82, 0.03, 0.26],
+        "pos": [0, 0.6, 0],
+        "color": "#8a6e44"
+      },
+      {
+        "size": [0.82, 0.03, 0.26],
+        "pos": [0, 1.2, 0],
+        "color": "#8a6e44"
+      }
+    ]
+  }
+}

@@ -7,11 +7,12 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
+    "gen": "pnpm --filter @asc/resource-library gen",
+    "dev": "pnpm gen && turbo run dev",
+    "build": "pnpm gen && turbo run build",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
-    "web": "pnpm --filter @asc/client web",
+    "web": "pnpm gen && pnpm --filter @asc/client web",
     "api": "pnpm --filter @asc/api dev"
   },
   "devDependencies": {

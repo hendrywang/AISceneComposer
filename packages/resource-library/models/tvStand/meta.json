@@ -1,0 +1,23 @@
+{
+  "id": "tvStand",
+  "name": "电视柜",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [1.4, 0.4],
+  "height": 1.1,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [1.4, 0.4, 0.4],
+        "pos": [0, 0.2, 0],
+        "color": "#b08d57"
+      },
+      {
+        "size": [1.1, 0.65, 0.05],
+        "pos": [0, 0.75, -0.1],
+        "color": "#1f2937"
+      }
+    ]
+  }
+}

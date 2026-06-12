@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import type { Vec3, Camera, CameraPreset } from '@asc/shared-types';
-import { getDef, modelDims, type ModelDef } from '../editor/catalog';
-import { SCENES } from '../editor/scenes';
+import { getDef, modelDims, SCENES, type ModelDef } from '@asc/resource-library';
 
 export type TransformMode = 'translate' | 'rotate';
 export type ObjectKind = 'actor' | 'prop' | 'environment';
@@ -22,6 +21,19 @@ export interface EditorObject {
   label?: string;
 }
 
+/** 可保存/读取的场景快照(本地 JSON 文件):忠实记录构图 + 机位 + 参考底图。
+ *  与 shared-types 的 Scene 是「编辑器全量快照 ⊇ 持久化契约」的关系;接 Firestore(D13)时再映射。 */
+export interface SceneSnapshot {
+  version: 1;
+  objects: EditorObject[];
+  cameras: Camera[];
+  bgImageUrl: string | null;
+  bgAspect: number | null;
+  /** 场景里用到的运行时上传模型(gltf,file 为内嵌 data URL)→ 存档自包含、可分享 */
+  userModels?: ModelDef[];
+  savedAt: number;
+}
+
 export type CameraCmd =
   | { type: 'save'; name: string }
   | { type: 'apply'; view: Camera }
@@ -37,9 +49,15 @@ interface EditorState {
   cameraCmd: CameraCmd;
   bgImageUrl: string | null;
   bgAspect: number | null;
+  /** 运行时上传的模型(gltf data URL),与静态 CATALOG 并存、可放进场景、随存档保存 */
+  userModels: ModelDef[];
 
   add: (modelId: string) => void;
+  addUserModel: (def: ModelDef) => void;
+  /** 把一个导入模型拆成多个部件对象;parts 带各自模型 + 相对原点的 (dx,dz) 模型空间偏移 */
+  splitInto: (originalId: string, parts: { def: ModelDef; dx: number; dz: number }[]) => void;
   loadScene: (presetId: string) => void;
+  loadSnapshot: (snap: SceneSnapshot) => void;
   clear: () => void;
   select: (id: string | null) => void;
   removeSelected: () => void;
@@ -59,6 +77,11 @@ interface EditorState {
 }
 
 const ACTOR_COLORS = ['#e23b3b', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
+
+/** 解析 modelId:先查运行时上传的 userModels,再查静态 CATALOG。 */
+function resolveDef(id: string, userModels: ModelDef[]): ModelDef | undefined {
+  return userModels.find((m) => m.id === id) ?? getDef(id);
+}
 
 let counter = 0;
 const uid = () => `o${(counter++).toString(36)}${Math.floor(Math.random() * 1e4).toString(36)}`;
@@ -94,10 +117,11 @@ export const useEditor = create<EditorState>((set) => ({
   cameraCmd: null,
   bgImageUrl: null,
   bgAspect: null,
+  userModels: [],
 
   add: (modelId) =>
     set((s) => {
-      const def = getDef(modelId);
+      const def = resolveDef(modelId, s.userModels);
       if (!def) return {};
       // 房间(环境)为单例:替换已有的、固定原点、不选中(避免误选整个房间)
       if (def.type === 'environment') {
@@ -109,6 +133,27 @@ export const useEditor = create<EditorState>((set) => ({
       const p = spread(s.objects.length);
       const obj = makeObject(def, [p[0]!, 0, p[2]!], 0, actorCount);
       return { objects: [...s.objects, obj], selectedId: obj.id };
+    }),
+
+  addUserModel: (def) => set((s) => ({ userModels: [...s.userModels, def] })),
+
+  // 拆分:移除原对象,按各部件的模型空间偏移(绕原 rotationY 旋转后)放到对应世界位置。
+  splitInto: (originalId, parts) =>
+    set((s) => {
+      const orig = s.objects.find((o) => o.id === originalId);
+      if (!orig || parts.length === 0) return {};
+      const cos = Math.cos(orig.rotationY);
+      const sin = Math.sin(orig.rotationY);
+      const newObjs = parts.map((p) => {
+        const wx = orig.position[0] + (p.dx * cos + p.dz * sin);
+        const wz = orig.position[2] + (-p.dx * sin + p.dz * cos);
+        return makeObject(p.def, [wx, 0, wz], orig.rotationY, 0);
+      });
+      return {
+        userModels: [...s.userModels, ...parts.map((p) => p.def)],
+        objects: [...s.objects.filter((o) => o.id !== originalId), ...newObjs],
+        selectedId: null,
+      };
     }),
 
   loadScene: (presetId) =>
@@ -125,6 +170,33 @@ export const useEditor = create<EditorState>((set) => ({
         })
         .filter((o): o is EditorObject => o !== null);
       return { objects, selectedId: null };
+    }),
+
+  // 读取保存的快照:按 modelId 在当前库里重建(库里没有的模型跳过),
+  // 保留各自的位置/旋转/颜色/姿势/标签,size 按当前 def 重算(库尺寸可能已更新)。
+  loadSnapshot: (snap) =>
+    set(() => {
+      const userModels = snap.userModels ?? [];
+      const objects = (snap.objects ?? [])
+        .map((o) => {
+          const def = resolveDef(o.modelId, userModels);
+          if (!def) return null;
+          const dims = modelDims(def);
+          return {
+            ...o,
+            kind: def.type,
+            size: [dims.footprint[0], dims.height, dims.footprint[1]] as [number, number, number],
+          };
+        })
+        .filter((o): o is EditorObject => o !== null);
+      return {
+        objects,
+        userModels,
+        cameras: snap.cameras ?? [],
+        bgImageUrl: snap.bgImageUrl ?? null,
+        bgAspect: snap.bgAspect ?? null,
+        selectedId: null,
+      };
     }),
 
   clear: () => set({ objects: [], selectedId: null }),
