@@ -1,7 +1,7 @@
 # 阶段 1 任务拆解 — 最小编辑器 + Firebase
 
 > 状态:草稿 v0.1
-> 最后更新:2026-06-11
+> 最后更新:2026-06-14
 > 关联:主文档 [development-plan.md](./development-plan.md)(决策 D1–D17);结构见 [project-structure.md](./project-structure.md);资产见 [asset-library.md](./asset-library.md)
 
 ---
@@ -32,12 +32,13 @@ M1.0 骨架渲染 ──► M1.1 资产摆放 ──► M1.2 相机系统 ──
 - ✅ **T2** 状态驱动(zustand)+ 点击选中 + Outlines 高亮 + 空白取消。R3F 事件系统与 OrbitControls 共存,暂未见 G2 触摸冲突(iPad 已初步验证)。
 - ◐ **T4** 增删 + 移动(锁地面 XZ)/ 旋转(仅绕 Y),用 drei TransformControls;**当前以占位方块代角色/道具**。"从资产库拖入"待 T3 接入真实资产后补全。
 - ✅ **T5** 多机位:存当前视角 / 切换 / 删除;FOV 广角24 · 标准50 · 长焦85。
-- ✅ **T6** 电影镜头预设:双人 / 过肩 / 仰拍 / 俯拍 / 特写,基于选中角色 + 当前视角方位实时算位。
-- ✅ **数据驱动模型库(catalog)**:加模型 = 加数据;统一渲染器 ModelView 分发(人体/家具/将来 glTF)。
-- ✅ **参数化人体**:6 个体型预设(高个/壮硕/瘦高/女性/丰满/儿童)+ 发型;6 种姿势(站/走/坐/挥手/指/欢呼)。
-- ✅ **家具图元套件**:床/床头柜/衣柜/书桌/椅/沙发/茶几/电视柜/书架/落地灯/绿植/黑板/课桌 + 房间外壳。
-- ✅ **场景预设**:卧室/客厅/教室一键载入;左侧资产库面板(分类 + 可滚动)。
-- ⏭ 下一步候选:**T7→T9**(端到端出图,现已可)/ 继续扩充模型 / **T3** 真实 glTF(catalog 已留 `gltf` source 接口)。
+- ⏪ **T6** 电影镜头预设(双人/过肩/仰/俯/特写)曾实现,**已在编辑器重构中移除**——改为「分镜:截存当前取景 + 回放」更直接;`computePreset` / `camera.ts` 已删。
+- ✅ **数据驱动模型库(catalog)**:加模型 = 加 `models/<id>/meta.json` 后 `pnpm gen`;统一渲染器 ModelView 按 `source.kind` 分发(人体/图元/房间壳/室外壳/glTF)。
+- ✅ **参数化人体**:9 个体型预设(高个/壮硕/瘦高/女性/丰满/儿童 + 卫士/长者/高个女)+ 发型;**19 种姿势**(站/走/跑/坐/席地/开车/跪/鞠躬/行礼/说话/讲解/倾听/叉腰/后仰/看左右/指/挥手/欢呼,启用 spine/neck)。
+- ✅ **图元资产套件**:catalog 共 **77 个模型**——家具/装饰/宫殿古风/厨房/办公/商业/医疗/室外/车辆 + 房间外壳 + 室外环境。
+- ✅ **场景预设**:**16 个**一键载入(卧室/客厅/教室/办公/厨房/餐厅/咖啡馆/商店/诊所/会议室 + 街道/公园/宫殿庭院 + 车内 + 电梯 + 宫殿大殿),多数**自带预摆姿势人物**;左侧资产库面板(分类 + 可滚动)。
+- ✅ **室外引擎 + 设置面板 + 三语 i18n**:室外环境(地面/天空/室外光随环境自动切换);设置面板 BYOK 选模 + 出图分辨率;en / zh-Hans / zh-Hant。
+- ⏭ 下一步候选:**Cloud Storage 持久化** / **Firebase 客户端接入**(Auth/Firestore/Storage)/ 继续扩充模型 / **T3** 真实 glTF(catalog 已留 `gltf` source 接口)。
 
 > 当前用占位方块;T3 接入 glTF 后直接替换,交互/状态代码不变。
 
@@ -75,17 +76,14 @@ M1.0 骨架渲染 ──► M1.1 资产摆放 ──► M1.2 相机系统 ──
 
 ## M1.3 导出与生成
 
-- [ ] **T7 — 渲染模式 + 截图导出**
-  - 导出时切"渲染模式":隐藏网格/gizmo/高亮,角色切身份纯色(风格按 T13 锁定);离屏渲染固定尺寸,`canvas.toBlob` 出 **WebP**。
-  - 验收:导出的截图干净无辅助元素,尺寸固定,体积合理(WebP)。
-- [ ] **T8 — 后端生成服务(Cloud Run / Node)**
-  - `services/api`:`POST /generate` 接收 `GenerateRequest`(截图 + prompt + style)→ 调 Gemini 图像(Nano Banana 2)→ 返回成图。先做同步,后续可换异步队列(见性能小节)。
-  - 验收:本地起服务,用一张截图 + prompt 调用,几秒内返回一张 AI 图。
-- [ ] **T9 — 前端生成流程**
-  - 写实/二次元 `style` 切换 + prompt 输入框 + "生成"按钮;乐观 UI + 进度态 + 结果展示与保存。
-  - 验收:编辑器里点"生成",几秒后看到忠实于布景与机位的 AI 图。
+- [x] **T7 — 渲染模式 + 截图导出**(已做):干净帧由 `PreviewCanvas` 导出 PNG,离屏放大到目标分辨率,长边由设置 `exportLongEdge` 控制(默认 1920)。
+- [x] **T8 — 后端生成服务(Cloud Run / Node)**(已做):`services/api` `POST /api/generate` 收截图 + prompt + style → `services/gemini.ts` 调 `gemini-3.1-flash-image`(Nano Banana 2),支持 BYOK `x-gemini-key`;`SKIP_AUTH=1` 本地跳鉴权。
+- [x] **T9 — 前端生成流程**(已做):`editor/generate.ts` 截当前帧 + prompt + style + 选模 → `/api/generate` → 回显;`store` 管理进度/结果态。
+  - **剩余**:成图现以 dataURL 回显;**上传 Cloud Storage 返回真实 URL 仍 TODO(M1.4)**。
 
 ## M1.4 Firebase 接入(D13,可与 M1.3 并行)
+
+> 状态:部署件(`firebase.json` / `firestore.rules` / `storage.rules`)+ 后端 Admin 鉴权(`services/api/src/middleware/auth.ts`)已就绪;**客户端 Firebase SDK 尚未接入**,以下 T10–T12 待做(场景目前仍存本地 JSON)。
 
 - [ ] **T10 — 登录**
   - Firebase Auth;React Native 持久化用 `getReactNativePersistence` + AsyncStorage(见 Gotchas)。

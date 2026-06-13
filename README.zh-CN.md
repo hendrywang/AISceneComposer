@@ -17,7 +17,7 @@ AI Scene Composer 是一个面向 AI 图片生成的轻量 3D「虚拟布景 / �
 3. 导出一张干净的 blocking 参考图。
 4. 把参考图交给 Google Gemini / Nano Banana 这类支持图像参考的生成模型。
 
-> 当前状态：alpha。Web 编辑器、本地场景保存/读取、模型导入、资源库贡献流程已经可用；云端持久化和生产级生成链路还在建设中。
+> 当前状态：alpha。Web 编辑器、本地场景保存/读取、模型导入、资源库贡献流程已经可用；**AI 出图也已端到端跑通**（自带 Gemini / Nano Banana API Key，BYOK）。云端持久化（Cloud Storage）与账号登录（Firebase Auth/Firestore）尚未接入客户端。
 
 ![AI Scene Composer 编辑器：网格舞台上摆放红蓝绿黄四个彩色代理角色，由合影机位取景，左侧是资源库与场景预设，配合变换工具、镜头预设与实时取景预览窗](./docs/assets/readme/editor.png)
 
@@ -58,12 +58,17 @@ AI Scene Composer 把这些难以用文字稳定表达的空间控制交给 3D �
 
 - **3D 虚拟布景编辑器**：摆放代理角色、道具和房间。
 - **彩色身份角色**：用红、蓝、绿、黄等颜色区分角色，并在 prompt 中引用。
-- **镜头系统**：保存机位、切换机位、调整 FOV、使用电影镜头预设。
+- **分镜系统**：把当前取景截存为分镜(机位 + 画幅 + 缩略图),一键回放/切换,并按镜头档调整 FOV。
+- **室内 + 室外环境**：房间外壳之外，新增室外引擎（地面 + 渐变天空 + 室内/室外自动切换光照）。
+- **自带人物的场景预设**：一键载入（宫殿觐见、办公室、厨房、咖啡馆、诊所、车内、街道、公园…），人物已就位且已摆好姿势。
+- **AI 出图（BYOK）**：把 blocking 图 + prompt 发给 Gemini / Nano Banana，自带 API Key，可选模型、风格与出图分辨率。
+- **设置面板**：API Key 只存本机浏览器（不进日志）；可选模型与导出尺寸。
+- **三语界面**：English / 简体中文 / 繁體中文。
 - **干净导出**：导出无网格、无选中框、无 UI 控件的构图参考图。
 - **本地场景文件**：保存和读取 JSON 场景快照。
 - **glTF/GLB 导入**：运行时导入自己的模型，并可随场景文件保存。
 - **模型拆分**：把导入的 glTF 模型按顶层部件拆开，方便单独移动或删除。
-- **文件化资源库**：新增模型只需要新增 `models/<id>/meta.json`。
+- **文件化资源库**：新增模型只需要新增 `models/<id>/meta.json`。当前内容库：**77 模型 · 19 姿势 · 16 场景预设**。
 - **开源项目基础设施**：许可证、贡献指南、CI、lint、format、测试、资源署名都已配置。
 
 ## 它不是什么
@@ -94,7 +99,7 @@ pnpm web
 ```bash
 pnpm gen                                  # 重新生成资源 catalog 和 CREDITS
 pnpm web                                  # 启动 Web 编辑器
-pnpm api                                  # 启动本地 API 骨架
+pnpm api                                  # 启动本地 API 服务(Gemini 出图)
 pnpm build                                # 生成资源并构建/检查各包
 pnpm build:web                            # 导出 Expo Web 构建
 pnpm lint                                 # ESLint
@@ -108,10 +113,10 @@ pnpm --filter @asc/resource-library check # 资源库一致性检查
 ## 仓库结构
 
 ```text
-apps/client                 Expo web 编辑器：3D 场景、相机、导入/导出 UI
+apps/client                 Expo web 编辑器：3D 场景、分镜、设置、导入/导出 UI
 packages/resource-library   文件化模型资源库，也是最主要的贡献入口
 packages/shared-types       前后端共享 TypeScript 类型
-services/api                Cloud Run 风格 Node/TypeScript API 骨架
+services/api                Cloud Run 风格 Node/TypeScript API(Gemini 出图)
 docs/                       架构、Firebase、资产管线、路线图文档
 ```
 
@@ -147,15 +152,15 @@ API 服务（Node / TypeScript，Cloud Run 风格）
 
 ## 当前限制
 
-- 生成 API 仍是骨架，还不是完整生产链路。
+- AI 出图已端到端跑通(自带 API Key),但成图以内联 data URL 返回;Cloud Storage 持久化与账号登录(Firebase Auth/Firestore)尚未接入客户端。
 - 场景 JSON 如果内嵌用户导入模型，文件可能变大。
 - 用户本地导入的模型只属于本地场景资产；除非许可证清楚，否则不要提交到仓库。
 - 当前目标是 Web 和 iPad Safari，原生 iOS/Android 打包不是当前重点。
 
 ## 路线图
 
-- 跑通端到端生成流程。
-- 用 Firebase 持久化场景和生成图片。
+- 用 Firebase 持久化场景和生成图片(Auth + Firestore + Cloud Storage)。
+- 跨已存机位做分镜/批量出图。
 - 给场景文件和导入资产增加更强的 schema 校验。
 - 扩充 CC0 / 可再分发资源库。
 - 沉淀写实和二次元风格 prompt 模板。

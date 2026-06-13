@@ -6,7 +6,7 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 # AI Scene Composer — 项目总览(skill)
 
 > 这是项目的"打开即懂"入口。详细内容在 `docs/` 下;本文件给全貌 + 成本,便于后续每次更新前快速对齐。
-> 维护:决策或价格变动时,更新本文件对应小节(并同步 `docs/development-plan.md`)。最后更新 2026-06-12。
+> 维护:决策或价格变动时,更新本文件对应小节(并同步 `docs/development-plan.md`)。最后更新 2026-06-14。
 
 ## 一句话
 
@@ -25,10 +25,10 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 ## 已锁定决策(改动前先看,勿重新讨论)
 
 - **D1–D3** 控制方式 = 3D 布景截图 + prompt → Nano Banana 2;**不用** ControlNet/深度图管线。
-- **D4** 角色只用**固定姿势**(每姿势一个静态 glTF),**不做 IK/骨骼**。
+- **D4** 角色只用**固定姿势**、**不做 IK/骨骼**。(实现:默认走参数化人体 `Mannequin` + 关节欧拉角 FK 摆姿;per-pose 静态 glTF 仍作为 `gltf` 源可选项保留。)
 - **D5** 角色一致性**延后**,后续交给 Nano Banana(多图条件)。
 - **D6/D11** 资产 ~100 个起步,**免费库**(Kenney CC0 主用)。
-- **D7** 产品核心 = **镜头/相机系统**(角色关系靠机位表达)。
+- **D7** 产品核心 = **镜头/分镜系统**(角色关系靠机位表达;数据层为 `Shot`)。
 - **D10** 画风写实 + 二次元,做成**生成时风格切换**(同套代理资产通吃)。
 - **D12** 前端 **Expo + Three.js**;Web 走 WebGL,移动端原生 GL。
 - **D13** **Firebase 全家桶**:Auth + Firestore + Cloud Storage。
@@ -45,22 +45,25 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 - **安全**:App Check + Security Rules(按归属隔离)。
 - **关键风险**:R3F+Expo 原生有 expo-gl 冲突 → 只做 Web;iPad 上 OrbitControls 吃触摸事件 → 点选要专门处理;glTF 纹理不自动回收 → 删除要 `dispose()`。
 
-## 已实现(代码,截至 2026-06-12)
+## 已实现(代码,截至 2026-06-14)
 
 **前端编辑器**(`apps/client`,Expo web + R3F + drei + zustand)—— 已跑通,typecheck + web 打包零告警:
 
-- **数据驱动模型库** `packages/resource-library`:加模型 = 加 `models/<id>/meta.json`;`ModelView` 按 `source.kind` 分发(`human` / `primitive` / `roomShell` / `gltf`)。
-- **参数化人体** `editor/Mannequin.tsx` + `packages/resource-library/src/poses.ts`:身高/围度/肩/髋/头/发型/胸部参数;6 体型预设;6 姿势;**自动落地**(Box3 量最低点对齐 y=0)。
-- **家具图元套件** `packages/resource-library/models/*/meta.json`:床/柜/桌/椅/沙发/茶几/电视柜/书架/灯/绿植/黑板/课桌 + 门/窗/壁画/地毯 + 房间外壳。
-- **场景预设** `packages/resource-library/src/scenes.ts`:卧室/客厅/教室,每面墙不同标志物(门/窗/画)给方位感;`loadScene` 一键载入;房间单例、不可选。
+- **数据驱动模型库** `packages/resource-library`:加模型 = 加 `models/<id>/meta.json` 后 `pnpm gen`;`ModelView` 按 `source.kind` 分发(`human` / `primitive` / `roomShell` / `outdoorShell` / `gltf`)。**catalog 现共 77 个模型**。
+- **参数化人体** `editor/Mannequin.tsx` + `packages/resource-library/src/poses.ts`:身高/围度/肩/髋/头/发型/胸部参数;9 体型(含卫士/长者/高个女);**19 姿势**(站/走/跑/坐/席地/开车/跪/鞠躬/行礼/说话/讲解/倾听… 启用 spine/neck);**自动落地**(Box3 量最低点对齐 y=0)。
+- **图元资产套件** `packages/resource-library/models/*/meta.json`:家具/装饰/宫殿古风/厨房/办公/商业/医疗/室外/车辆 等(盒子 + 单面薄片拼装,自包含可序列化)。
+- **室内/室外环境** `editor/RoomShell.tsx` + `editor/OutdoorShell.tsx` + `editor/SceneLighting.tsx`:室内反向盒房间;室外引擎 = 大地面 + 顶点色渐变天空穹 + 远景剪影;`SceneLighting` 依当前环境在室内/室外光鬼间**自动切换**,主画布与预览/导出画布共用(WYSIWYG);上传参考照片时隐藏天空、保留地面。
+- **场景预设** `packages/resource-library/src/scenes.ts`:**16 个**(卧室/客厅/教室/办公室/厨房/餐厅/咖啡馆/商店/诊所/会议室 + 室外街道/公园/宫殿庭院 + 车内 + 电梯 + 宫殿大殿);`loadScene` 一键载入,**多数自带已就位 + 已摆姿势的人物**(`Placement` 支持 `poseId`/`colorIndex`,`validateCatalog` 校验姿势名);房间/室外环境单例、不可选。
 - **编辑交互** `editor/SceneView.tsx`:点选 + 地面光圈高亮;TransformControls 移动(锁地 XZ)/ 旋转(绕 Y)。状态在 `store/editorStore.ts`(modelId 驱动)。
-- **相机系统** `editor/CameraRig.tsx` + `camera.ts`:多机位存/切/删、FOV(广角75/标准50/长焦28)、电影预设(双人/过肩/仰/俯/特写,按选中角色 + 当前方位算位)。
-- **取景预览窗** `editor/Preview.tsx` + `cameraSync.ts`:右侧实时镜像机位;比例下拉(16:9…9:16);**上传底图**(设为 scene.background,预览比例随照片);**下载**导出 FHD(长边 1920,常量 `EXPORT_LONG_EDGE`)合成 PNG。
+- **分镜/机位系统** `editor/CameraRig.tsx`(消费 `store.cameraCmd`)+ `editor/panels/inspector/ShotStrip.tsx`:把当前取景(机位 + 画幅)**截存为分镜缩略图**(`captureShot`),点选回放/切换(`applyShot`);FOV/镜头档(`LensPicker`,超广角…超长焦)。**注意**:旧的相机电影预设(过肩/双人/仰/俯/特写)与 `camera.ts` 已在重构中移除。
+- **取景预览窗** `editor/Preview.tsx` + `cameraSync.ts`:实时镜像主视图机位;画幅切换;**上传底图**(设为 scene.background,预览比例随照片);**下载导出** PNG(长边由设置 `exportLongEdge` 控制,默认 1920)。
+- **设置面板** `store/settingsStore.ts`(localStorage 持久化):**BYOK** 填自己的 Gemini/Nano Banana Key、选模型、出图分辨率、默认画幅、语言。
+- **三语 i18n** `apps/client/src/i18n`:en / zh-Hans(文案真相源)/ zh-Hant,缺键 TS 报错。
 - **本地分享/扩展** `editor/sceneFile.ts` + `importModel.ts` + `splitModel.ts`:保存/读取场景 JSON,导入 glTF/GLB 并归一化为自包含 GLB data URL,可按顶层部件拆分导入模型。
 
-**后端** `services/api`:Express + multer + firebase-admin + `@google/genai` 骨架;`POST /api/generate` 占位;`SKIP_AUTH=1` 本地跳鉴权。**真实出图未接通**。
+**后端** `services/api`:Express + multer + firebase-admin + `@google/genai`;**`POST /api/generate` 已接通真实出图**(`services/gemini.ts` 调 `gemini-3.1-flash-image`,支持 BYOK `x-gemini-key`;`middleware/auth.ts` 用 Admin SDK 验 ID token,`SKIP_AUTH=1` 本地跳鉴权)。**仅剩** Cloud Storage 持久化是 TODO(现回 dataURL)。
 
-**共享类型** `packages/shared-types`:Scene/Actor/Prop/Camera/Asset/GenerateRequest。
+**共享类型** `packages/shared-types`:Scene/Actor/Prop/**Shot**(原 `Camera`,含 `aspect`/`thumbnail`)/Asset/GenerateRequest。
 
 ### 关键技术坑 & 解法(改代码前必看)
 
@@ -74,8 +77,8 @@ description: AI Scene Composer 项目总览与成本参考。开始或更新本�
 
 ### 尚未实现(下一步)
 
-- **T7→T9**:把「生成」接通(导出帧 → 后端 → Nano Banana → 回显);后端目前是骨架。
-- **Firebase 接入**(Auth/Firestore/Storage,D13)未做。
+- **Cloud Storage 持久化**:出图已端到端接通,但成图现以 dataURL 回显;上传到 Cloud Storage 返回真实 URL 仍 TODO。
+- **Firebase 客户端接入**(Auth/Firestore/Storage,D13)未做:部署件(`firebase.json`/`firestore.rules`/`storage.rules`)+ 后端 Admin 鉴权已就绪,但客户端无 Firebase SDK,场景存档仍是本地 JSON。
 - **角色一致性**(D5)、原生打包(D15)延后。
 
 ---

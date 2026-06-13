@@ -20,8 +20,9 @@ The core workflow is simple:
 3. Export a clean blocking image.
 4. Use that image as the visual reference for Google Gemini / Nano Banana-style image generation.
 
-> Status: alpha. The web editor, local scene save/load, model import, and resource library workflow are usable. Cloud
-> persistence and production-grade generation are still in progress.
+> Status: alpha. The web editor, local scene save/load, model import, and the resource library workflow are usable, and
+> AI generation runs end-to-end with your own Gemini / Nano Banana API key (BYOK). Cloud persistence (Cloud Storage) and
+> accounts (Firebase Auth/Firestore) are not wired into the client yet.
 
 ![AI Scene Composer editor: colored proxy actors blocked on a 3D stage, framed by a group-shot camera, with the asset library and scene presets on the left, transform and camera tools, and a live framed preview](./docs/assets/readme/editor.png)
 
@@ -61,12 +62,17 @@ prompt-only workflow.
 
 - **3D virtual set editor**: place proxy actors, props, and rooms.
 - **Color-coded characters**: use simple identity colors that can be referenced in prompts.
-- **Camera system**: save cameras, switch views, adjust FOV, and apply cinematic presets.
+- **Shot system (storyboard)**: capture the current framing as a shot (camera position + aspect + thumbnail), recall/switch shots, and adjust FOV via lens presets.
+- **Indoor & outdoor environments**: enclosed room shells plus an outdoor engine (ground, gradient sky, and lighting that switches automatically indoor↔outdoor).
+- **Scene presets with posed characters**: one-click setups (palace audience, office, kitchen, café, clinic, in-car, street, park, …) that load with actors already placed and posed.
+- **AI generation (BYOK)**: send the blocking image + prompt to Gemini / Nano Banana with your own API key; choose the model, style, and output resolution.
+- **Settings panel**: your API key stays in the browser (never logged); pick model and export size.
+- **Tri-lingual UI**: English, Simplified Chinese, and Traditional Chinese.
 - **Clean export**: generate a composition image without UI controls or selection helpers.
 - **Local scene files**: save and reload JSON scene snapshots.
 - **glTF/GLB import**: import user models at runtime and store them in scene snapshots as self-contained assets.
 - **Model splitting**: split imported glTF models by top-level parts for separate selection and movement.
-- **File-based resource library**: add assets by adding `models/<id>/meta.json`.
+- **File-based resource library**: add assets by adding `models/<id>/meta.json`. Current catalog: **77 models · 19 poses · 16 scene presets**.
 - **Open-source ready workflow**: license, contribution guide, CI, linting, formatting, tests, and asset credits.
 
 ## What It Is Not
@@ -98,7 +104,7 @@ Open the Expo web URL printed by the dev server.
 ```bash
 pnpm gen                                  # regenerate resource catalog and credits
 pnpm web                                  # start the web editor
-pnpm api                                  # start the local API skeleton
+pnpm api                                  # start the local API server (Gemini generation)
 pnpm build                                # generate catalog and build/typecheck packages
 pnpm build:web                            # export the Expo web build
 pnpm lint                                 # ESLint
@@ -112,10 +118,10 @@ pnpm --filter @asc/resource-library check # resource catalog consistency checks
 ## Repository Layout
 
 ```text
-apps/client                 Expo web editor: 3D scene, camera, import/export UI
+apps/client                 Expo web editor: 3D scene, shots, settings, import/export UI
 packages/resource-library   File-based model catalog and contribution surface
 packages/shared-types       Shared TypeScript contracts for scene/generation data
-services/api                Cloud Run-style Node/TypeScript API skeleton for Gemini
+services/api                Cloud Run-style Node/TypeScript API for Gemini image generation
 docs/                       Architecture notes, Firebase plan, asset pipeline, roadmap
 ```
 
@@ -154,7 +160,7 @@ generation jobs.
 
 ## Current Limitations
 
-- The generation API is still a skeleton and currently not a complete production pipeline.
+- AI generation runs end-to-end with your own API key, but results are returned inline (data URL); Cloud Storage persistence and accounts (Firebase Auth/Firestore) are not wired into the client yet.
 - Scene JSON files can become large when they embed imported user models.
 - Imported user assets are local scene assets; do not submit them to the repository unless redistribution rights are
   clear.
@@ -162,8 +168,8 @@ generation jobs.
 
 ## Roadmap
 
-- Finish the end-to-end generation flow.
-- Persist scenes and generated images through Firebase.
+- Persist scenes and generated images through Firebase (Auth + Firestore + Cloud Storage).
+- Add storyboard/batch export across saved shots.
 - Add stronger schema validation for scene files and imported assets.
 - Expand the CC0/redistributable resource library.
 - Add richer prompt templates for realistic and anime styles.
