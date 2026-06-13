@@ -1,0 +1,13 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 场景文档按归属隔离:仅 ownerId 本人可读写。
+    match /scenes/{sceneId} {
+      allow read, update, delete: if request.auth != null
+        && request.auth.uid == resource.data.ownerId;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.ownerId;
+    }
+  }
+}
