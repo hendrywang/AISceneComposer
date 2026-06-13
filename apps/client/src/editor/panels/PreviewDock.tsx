@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useEditor } from '../../store/editorStore';
+import { useSettings } from '../../store/settingsStore';
 import { useUI } from '../../ui/uiStore';
 import { useBreakpoint } from '../../ui/useBreakpoint';
 import { Backdrop } from '../../ui/primitives/Backdrop';
 import { useHoverTip, TooltipBubble, type TipPlace } from '../../ui/primitives/Tooltip';
-import { color, space, radius, font, z, layout, elevation } from '../../ui/theme';
+import { color, space, radius, font, z, layout, elevation, touch } from '../../ui/theme';
 import { safeTop } from '../../ui/safeArea';
 import { previewControl } from '../cameraSync';
 // PreviewCanvas 只在此处挂载,保证全应用生命周期仅一个预览 WebGL 上下文(导出依赖它)。
@@ -19,7 +21,6 @@ const RATIOS: { id: string; w: number; h: number }[] = [
   { id: '9:16', w: 9, h: 16 },
 ];
 const RATIO_IDS = RATIOS.map((r) => r.id);
-const EXPORT_LONG_EDGE = 1920; // 导出长边(FHD)
 
 type Mode = 'rail' | 'thumb' | 'overlay';
 
@@ -60,6 +61,7 @@ function IconBtn({
 
 /** 左上角:图片比例小药丸 + 下拉(与角标图标同款半透样式)。含悬停提示。 */
 function AspectPill({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { ref, hovered, align, hoverProps } = useHoverTip();
   return (
@@ -73,7 +75,7 @@ function AspectPill({ value, onChange }: { value: string; onChange: (v: string) 
         <Text style={styles.aspectText}>{value}</Text>
         <Text style={styles.aspectCaret}>{open ? '▴' : '▾'}</Text>
       </Pressable>
-      {hovered && !open ? <TooltipBubble label="画面比例 / 导出尺寸" place="bottom" align={align} /> : null}
+      {hovered && !open ? <TooltipBubble label={t('preview.aspectTip')} place="bottom" align={align} /> : null}
       {open && (
         <View style={styles.aspectList}>
           {RATIO_IDS.map((o) => (
@@ -104,17 +106,21 @@ function AspectPill({ value, onChange }: { value: string; onChange: (v: string) 
  * 功能键改为压在预览框四角的图标:左上=比例、右上=底图、右下=下载(overlay 额外左下=收起)。
  */
 export function PreviewDock() {
+  const { t } = useTranslation();
   const bgImageUrl = useEditor((s) => s.bgImageUrl);
   const bgAspect = useEditor((s) => s.bgAspect);
   const setBg = useEditor((s) => s.setBg);
+  const exportLongEdge = useSettings((s) => s.exportLongEdge);
 
   const previewExpanded = useUI((s) => s.previewExpanded);
   const setPreviewExpanded = useUI((s) => s.setPreviewExpanded);
 
   const { isDesktop, width, height } = useBreakpoint();
   const mode: Mode = isDesktop ? 'rail' : previewExpanded ? 'overlay' : 'thumb';
+  // 让开右上角设置齿轮(齿轮 = Panel + Button:桌面 compact 36、其余 44,各加 Panel 内距与上/下间距)。
+  const gearClearance = (isDesktop ? touch.minDesktop : touch.min) + space.md * 2 + space.lg * 2;
 
-  const [aspectId, setAspectId] = useState('16:9');
+  const [aspectId, setAspectId] = useState(useSettings.getState().defaultAspect);
   const ratio = RATIOS.find((r) => r.id === aspectId) ?? RATIOS[0]!;
   const ar = bgImageUrl && bgAspect ? bgAspect : ratio.w / ratio.h;
 
@@ -131,7 +137,7 @@ export function PreviewDock() {
   }, [ar, longEdge]);
 
   const download = () => {
-    const url = previewControl.capture?.(EXPORT_LONG_EDGE);
+    const url = previewControl.capture?.(exportLongEdge);
     if (!url || typeof document === 'undefined') return;
     const a = document.createElement('a');
     a.href = url;
@@ -164,7 +170,15 @@ export function PreviewDock() {
   return (
     <>
       {mode === 'overlay' && <Backdrop onPress={() => setPreviewExpanded(false)} />}
-      <View style={[styles.card, cardStyle]} pointerEvents="box-none">
+      <View
+        style={[
+          styles.card,
+          cardStyle,
+          mode === 'rail' && { paddingTop: gearClearance },
+          mode === 'thumb' && { marginTop: gearClearance },
+        ]}
+        pointerEvents="box-none"
+      >
         <View style={[styles.frame, { width: boxW, height: boxH }]} pointerEvents="box-none">
           {/* 画布:始终挂载在同一位置 → 不重建 */}
           <View style={styles.box} pointerEvents="auto">
@@ -178,7 +192,7 @@ export function PreviewDock() {
               pointerEvents="auto"
             >
               <View style={styles.thumbBadge} pointerEvents="none">
-                <Text style={styles.thumbBadgeText}>⤢ 取景</Text>
+                <Text style={styles.thumbBadgeText}>⤢ {t('preview.frame')}</Text>
               </View>
             </Pressable>
           ) : (
@@ -191,31 +205,36 @@ export function PreviewDock() {
               <View style={styles.cornerTR} pointerEvents="auto">
                 <IconBtn
                   icon="🖼"
-                  tip={bgImageUrl ? '更换参考底图' : '上传参考底图(作为出图背景)'}
+                  tip={bgImageUrl ? t('preview.replaceBg') : t('preview.uploadBg')}
                   place="bottom"
                   onPress={pickImage}
                 />
                 {bgImageUrl ? (
-                  <IconBtn icon="✕" tip="清除底图" place="bottom" onPress={() => setBg(null, null)} />
+                  <IconBtn icon="✕" tip={t('preview.clearBg')} place="bottom" onPress={() => setBg(null, null)} />
                 ) : null}
               </View>
               {/* 右下:出图 + 下载 */}
               <View style={styles.cornerBR} pointerEvents="auto">
                 <IconBtn
                   icon="✨"
-                  tip="用当前取景生成 AI 图像"
+                  tip={t('preview.genFromFraming')}
                   place="top"
                   onPress={() => useUI.getState().openGenerate()}
                 />
-                <IconBtn icon="⬇" tip="下载当前取景为 PNG(长边 1920)" place="top" onPress={download} />
+                <IconBtn
+                  icon="⬇"
+                  tip={t('preview.downloadPng', { px: exportLongEdge })}
+                  place="top"
+                  onPress={download}
+                />
               </View>
               {/* 覆盖层额外:左下 收起 */}
               {mode === 'overlay' && (
                 <View style={styles.cornerBL} pointerEvents="auto">
                   <IconBtn
                     icon="✕"
-                    label="收起"
-                    tip="收起放大预览"
+                    label={t('preview.collapse')}
+                    tip={t('preview.collapseTip')}
                     place="top"
                     onPress={() => setPreviewExpanded(false)}
                   />
@@ -235,7 +254,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: safeTop,
     right: space.lg,
-    paddingTop: space.lg,
     width: layout.rightDockW - space.lg,
   },
   thumb: { position: 'absolute', top: safeTop, right: space.lg, zIndex: z.panel },

@@ -16,6 +16,8 @@ interface UIState {
   previewExpanded: boolean;
   /** 出图面板(模态)开关 */
   generateOpen: boolean;
+  /** 设置面板(模态)开关 */
+  settingsOpen: boolean;
 
   /** 选中物体的悬浮工具条锚点(屏幕像素;由画布内的投影追踪器写入) */
   hudX: number;
@@ -34,6 +36,8 @@ interface UIState {
   setDragging: (v: boolean) => void;
   openGenerate: () => void;
   closeGenerate: () => void;
+  openSettings: () => void;
+  closeSettings: () => void;
 }
 
 export const useUI = create<UIState>((set) => ({
@@ -41,6 +45,7 @@ export const useUI = create<UIState>((set) => ({
   activeSheet: null,
   previewExpanded: false,
   generateOpen: false,
+  settingsOpen: false,
   hudX: 0,
   hudY: 0,
   hudVisible: false,
@@ -54,6 +59,8 @@ export const useUI = create<UIState>((set) => ({
   setPreviewExpanded: (v) => set({ previewExpanded: v }),
   setHud: (x, y, visible) => set({ hudX: x, hudY: y, hudVisible: visible }),
   setDragging: (v) => set({ dragging: v }),
-  openGenerate: () => set({ generateOpen: true, activeSheet: null, previewExpanded: false }),
+  openGenerate: () => set({ generateOpen: true, settingsOpen: false, activeSheet: null, previewExpanded: false }),
   closeGenerate: () => set({ generateOpen: false }),
+  openSettings: () => set({ settingsOpen: true, generateOpen: false, activeSheet: null, previewExpanded: false }),
+  closeSettings: () => set({ settingsOpen: false }),
 }));

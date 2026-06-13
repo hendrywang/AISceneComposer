@@ -27,6 +27,9 @@ export function makeGenerateRouter(deps: GenerateDeps = { generateImage }): Rout
     try {
       const prompt = String(req.body.prompt ?? '');
       const style = (req.body.style as RenderStyle) ?? 'realistic';
+      // BYOK:客户端自带 Key 走 header(不入 body/日志);model 可随表单覆盖。
+      const apiKey = req.header('x-gemini-key') || undefined;
+      const model = req.body.model ? String(req.body.model) : undefined;
       const file = req.file;
 
       if (!file?.buffer) return res.status(400).json({ error: 'blockingImage (file) is required' });
@@ -40,6 +43,8 @@ export function makeGenerateRouter(deps: GenerateDeps = { generateImage }): Rout
         mimeType: file.mimetype,
         prompt,
         style,
+        apiKey,
+        model,
       });
 
       // TODO(M1.4):把 image 上传到 Cloud Storage,返回真实 URL;现阶段先回 data URL

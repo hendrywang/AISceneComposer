@@ -4,6 +4,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { getDef, type ModelDef } from '@asc/resource-library';
 import { useEditor } from '../store/editorStore';
 import { resolveModelUri } from './assetResolver';
+import i18n from '../i18n';
 
 // 把一个 glTF 模型按「顶层部件」拆成多个独立对象:每个部件单独导出成自包含 GLB,
 // 各自成为可分别选中/删除/移动的对象。部件位置 = 原对象位置 + 该部件在模型里的偏移。
@@ -48,7 +49,7 @@ export async function splitSelected() {
   if (!obj) return;
   const def = st.userModels.find((m) => m.id === obj.modelId) ?? getDef(obj.modelId);
   if (!def || def.source.kind !== 'gltf') {
-    window.alert('只有导入的 glTF 模型可以拆分');
+    window.alert(i18n.t('errors.splitOnlyGltf'));
     return;
   }
 
@@ -58,7 +59,7 @@ export async function splitSelected() {
     scene.updateMatrixWorld(true);
     const children = partLevel(scene);
     if (children.length < 2) {
-      window.alert('这个模型只有一个部件,无法拆分(可能整体是一个网格)');
+      window.alert(i18n.t('errors.splitSingle'));
       return;
     }
 
@@ -100,6 +101,6 @@ export async function splitSelected() {
 
     st.splitInto(obj.id, parts);
   } catch (e) {
-    window.alert('拆分失败:' + ((e as Error)?.message ?? e));
+    window.alert(i18n.t('errors.splitFailed', { msg: (e as Error)?.message ?? String(e) }));
   }
 }

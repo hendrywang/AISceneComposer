@@ -166,7 +166,7 @@ function CameraSyncWriter() {
   return null;
 }
 
-export default function SceneView() {
+export default function SceneView({ gizmoMargin = [72, 72] }: { gizmoMargin?: [number, number] }) {
   const objects = useEditor((s) => s.objects);
   const selectedId = useEditor((s) => s.selectedId);
 
@@ -191,8 +191,8 @@ export default function SceneView() {
       <CameraSyncWriter />
       <SelectionHudTracker />
       <OrbitControls makeDefault />
-      {/* 方位小立方:放在右下空白带,margin 抬高以避开底部相机面板/手机 Tab 栏 */}
-      <GizmoHelper alignment="bottom-right" margin={[72, 104]}>
+      {/* 方位小立方:右下角留白由 Editor 按断点传入(桌面/iPad 贴角,手机抬高避开 Tab 栏) */}
+      <GizmoHelper alignment="bottom-right" margin={gizmoMargin}>
         <GizmoViewport />
       </GizmoHelper>
     </>

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useEditor } from '../../store/editorStore';
 import { useUI } from '../../ui/uiStore';
-import { POSE_OPTIONS } from '@asc/resource-library';
+import { POSE_OPTIONS, getDef } from '@asc/resource-library';
+import { splitSelected } from '../splitModel';
 import { useHoverTip, TooltipBubble } from '../../ui/primitives/Tooltip';
 import { color, space, radius, font, z, elevation } from '../../ui/theme';
 
@@ -46,6 +48,7 @@ function HudIconBtn({
  * 位置由画布内的 SelectionHudTracker 投影计算并写入 uiStore。
  */
 export function SelectionHud() {
+  const { t } = useTranslation();
   const visible = useUI((s) => s.hudVisible);
   const x = useUI((s) => s.hudX);
   const y = useUI((s) => s.hudY);
@@ -58,6 +61,7 @@ export function SelectionHud() {
   const duplicateSelected = useEditor((s) => s.duplicateSelected);
   const removeSelected = useEditor((s) => s.removeSelected);
   const setPose = useEditor((s) => s.setPose);
+  const userModels = useEditor((s) => s.userModels);
 
   const [open, setOpen] = useState(false);
   const sel = objects.find((o) => o.id === selectedId) ?? null;
@@ -69,6 +73,9 @@ export function SelectionHud() {
 
   if (!visible || !sel) return null;
   const isActor = sel.kind === 'actor';
+  // 选中的是导入的 glTF 模型时,才显示「拆分」(与原顶部工具条一致)
+  const selDef = userModels.find((m) => m.id === sel.modelId) ?? getDef(sel.modelId);
+  const canSplit = selDef?.source.kind === 'gltf';
 
   // 拖动读数:移动 → 绝对坐标(米,Y 锁地面);旋转 → 角度(0–360°)
   const deg = ((((sel.rotationY * 180) / Math.PI) % 360) + 360) % 360;
@@ -98,20 +105,26 @@ export function SelectionHud() {
           <View style={styles.row}>
             <HudIconBtn
               icon="🖐️"
-              tip="移动"
+              tip={t('transform.move')}
               active={mode === 'translate'}
               onPress={() => setMode('translate')}
             />
-            <HudIconBtn icon="🔄" tip="旋转" active={mode === 'rotate'} onPress={() => setMode('rotate')} />
-            <HudIconBtn icon="📋" tip="复制" onPress={duplicateSelected} />
-            <HudIconBtn icon="🗑" tip="删除" danger onPress={removeSelected} />
+            <HudIconBtn
+              icon="🔄"
+              tip={t('transform.rotate')}
+              active={mode === 'rotate'}
+              onPress={() => setMode('rotate')}
+            />
+            <HudIconBtn icon="📋" tip={t('transform.duplicate')} onPress={duplicateSelected} />
+            {canSplit ? <HudIconBtn icon="✂️" tip={t('transform.split')} onPress={splitSelected} /> : null}
+            <HudIconBtn icon="🗑" tip={t('transform.delete')} danger onPress={removeSelected} />
           </View>
 
           {/* 姿势(仅角色) */}
           {isActor && (
             <>
               <View style={styles.divider} />
-              <Text style={styles.label}>姿势</Text>
+              <Text style={styles.label}>{t('inspector.pose')}</Text>
               <View style={styles.poseRow}>
                 {POSE_OPTIONS.map((po) => (
                   <Pressable
@@ -123,7 +136,7 @@ export function SelectionHud() {
                       pressed && styles.pressed,
                     ]}
                   >
-                    <Text style={styles.poseText}>{po.label}</Text>
+                    <Text style={styles.poseText}>{t(`pose.${po.id}`, { defaultValue: po.label })}</Text>
                   </Pressable>
                 ))}
               </View>

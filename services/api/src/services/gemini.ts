@@ -6,6 +6,10 @@ export interface GenerateImageInput {
   mimeType: string;
   prompt: string;
   style: RenderStyle;
+  /** BYOK:客户端自带的 API Key;缺省回退到 GEMINI_API_KEY 环境变量 */
+  apiKey?: string;
+  /** 覆盖默认出图模型 id;缺省回退到 GEMINI_IMAGE_MODEL / 内置默认 */
+  model?: string;
 }
 
 export interface GenerateImageOutput {
@@ -27,10 +31,12 @@ const DEFAULT_MODEL = process.env.GEMINI_IMAGE_MODEL ?? 'gemini-3.1-flash-image'
  * 响应解析以官方 @google/genai SDK 实际结构为准。
  */
 export async function generateImage(input: GenerateImageInput): Promise<GenerateImageOutput> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  // BYOK 优先:客户端 Key > 服务端环境变量。Key 不打印、不持久。
+  const apiKey = input.apiKey ?? process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error('GEMINI_API_KEY 未配置 —— 配置后接通 Nano Banana 2(见 services/api/.env.example)');
+    throw new Error('未提供 API Key —— 请在前端设置里填入,或在服务端配置 GEMINI_API_KEY');
   }
+  const model = input.model ?? DEFAULT_MODEL;
 
   const { GoogleGenAI } = await import('@google/genai');
   const ai = new GoogleGenAI({ apiKey });
@@ -38,7 +44,7 @@ export async function generateImage(input: GenerateImageInput): Promise<Generate
   const fullPrompt = `${input.prompt}\n\nStyle: ${STYLE_PROMPT[input.style]}`;
 
   const result = await ai.models.generateContent({
-    model: DEFAULT_MODEL,
+    model,
     contents: [
       {
         role: 'user',

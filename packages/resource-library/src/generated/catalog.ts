@@ -582,7 +582,7 @@ export const CATALOG: ModelDef[] = [
     "id": "door",
     "name": "门",
     "type": "prop",
-    "category": "门窗装饰",
+    "category": "装饰",
     "footprint": [0.95, 0.14],
     "height": 2.05,
     "source": {
@@ -613,7 +613,7 @@ export const CATALOG: ModelDef[] = [
     "id": "painting",
     "name": "壁画",
     "type": "prop",
-    "category": "门窗装饰",
+    "category": "装饰",
     "footprint": [1.2, 0.1],
     "height": 1.95,
     "source": {
@@ -638,7 +638,7 @@ export const CATALOG: ModelDef[] = [
     "id": "rug",
     "name": "地毯",
     "type": "prop",
-    "category": "门窗装饰",
+    "category": "装饰",
     "footprint": [2.4, 1.7],
     "height": 0.03,
     "source": {
@@ -656,7 +656,7 @@ export const CATALOG: ModelDef[] = [
     "id": "wallClock",
     "name": "挂钟",
     "type": "prop",
-    "category": "门窗装饰",
+    "category": "装饰",
     "footprint": [0.5, 0.1],
     "height": 1.95,
     "source": {
@@ -693,7 +693,7 @@ export const CATALOG: ModelDef[] = [
     "id": "wallTV",
     "name": "壁挂电视",
     "type": "prop",
-    "category": "门窗装饰",
+    "category": "装饰",
     "footprint": [1.6, 0.1],
     "height": 1.9,
     "source": {
@@ -718,7 +718,7 @@ export const CATALOG: ModelDef[] = [
     "id": "window",
     "name": "窗户",
     "type": "prop",
-    "category": "门窗装饰",
+    "category": "装饰",
     "footprint": [1.4, 0.14],
     "height": 2.15,
     "source": {
@@ -755,7 +755,7 @@ export const CATALOG: ModelDef[] = [
     "id": "room",
     "name": "空房间",
     "type": "environment",
-    "category": "场景元素",
+    "category": "场景",
     "footprint": [6, 6],
     "height": 3,
     "source": {
@@ -767,7 +767,7 @@ export const CATALOG: ModelDef[] = [
     "id": "roomBalcony",
     "name": "阳台房间",
     "type": "environment",
-    "category": "场景元素",
+    "category": "场景",
     "footprint": [6, 6],
     "height": 3,
     "source": {

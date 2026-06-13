@@ -1,104 +1,46 @@
 import { View, StyleSheet } from 'react-native';
-import { getDef } from '@asc/resource-library';
+import { useTranslation } from 'react-i18next';
 import { useEditor } from '../../store/editorStore';
 import { saveSceneToFile, loadSceneFromFile } from '../sceneFile';
-import { splitSelected } from '../splitModel';
 import { Button } from '../../ui/primitives/Button';
 import { color, space } from '../../ui/theme';
 
-/** 变换工具(移动/旋转/删除)。纯内容,由 LayoutShell 包浮层并定位。 */
+/**
+ * 顶部工具条 = 场景级操作:清空(新建空白场景 + 复位视角) / 保存 / 读取。
+ * 物体级操作(移动/旋转/复制/拆分/删除)在选中物体后的悬浮工具条(SelectionHud)里。
+ */
 export function TransformToolbar({ compact }: { compact?: boolean }) {
-  const mode = useEditor((s) => s.transformMode);
-  const setMode = useEditor((s) => s.setMode);
-  const removeSelected = useEditor((s) => s.removeSelected);
-  const duplicateSelected = useEditor((s) => s.duplicateSelected);
+  const { t } = useTranslation();
   const clear = useEditor((s) => s.clear);
-  const selectedId = useEditor((s) => s.selectedId);
   const hasObjects = useEditor((s) => s.objects.length > 0);
-
-  // 选中的是 glTF / 导入模型时,才显示「拆分」
-  const objects = useEditor((s) => s.objects);
-  const userModels = useEditor((s) => s.userModels);
-  const sel = objects.find((o) => o.id === selectedId);
-  const selDef = sel ? (userModels.find((m) => m.id === sel.modelId) ?? getDef(sel.modelId)) : undefined;
-  const canSplit = selDef?.source.kind === 'gltf';
 
   return (
     <View style={styles.row}>
+      {/* 新建 = 完全空白的场景(清空物体 / 机位 / 底图)并复位视角 */}
       <Button
-        label="移动"
-        icon="🖐️"
+        label={t('transform.newScene')}
+        icon="📄"
         compact={compact}
-        active={mode === 'translate'}
-        tooltip="移动:沿地面拖动选中的物体"
-        tooltipPlace="bottom"
-        onPress={() => setMode('translate')}
-      />
-      <Button
-        label="旋转"
-        icon="🔄"
-        compact={compact}
-        active={mode === 'rotate'}
-        tooltip="旋转:绕竖直轴转动选中的物体"
-        tooltipPlace="bottom"
-        onPress={() => setMode('rotate')}
-      />
-      <View style={styles.sep} />
-      {/* 复制 = 在旁边再放一份;删除 = 当前选中物体;清空 = 整个场景从头来 */}
-      <Button
-        label="复制"
-        icon="📋"
-        compact={compact}
-        disabled={!selectedId}
-        tooltip="复制选中的物体,在旁边再放一份"
-        tooltipPlace="bottom"
-        onPress={duplicateSelected}
-      />
-      {canSplit && (
-        <Button
-          label="拆分"
-          icon="✂️"
-          compact={compact}
-          tooltip="把导入的模型拆成各部件,便于单独删除/移动"
-          tooltipPlace="bottom"
-          onPress={splitSelected}
-        />
-      )}
-      <Button
-        label="删除"
-        icon="🗑"
-        tone="danger"
-        compact={compact}
-        disabled={!selectedId}
-        tooltip="删除当前选中的物体"
-        tooltipPlace="bottom"
-        onPress={removeSelected}
-      />
-      <Button
-        label="清空"
-        icon="🧹"
-        compact={compact}
-        disabled={!hasObjects}
-        tooltip="清空整个场景,从头开始"
+        tooltip={t('transform.newSceneTip')}
         tooltipPlace="bottom"
         onPress={clear}
       />
       <View style={styles.sep} />
       {/* 保存 = 把当前构图(含机位/底图)存成 .json 文件;读取 = 从文件还原 */}
       <Button
-        label="保存"
+        label={t('transform.save')}
         icon="💾"
         compact={compact}
         disabled={!hasObjects}
-        tooltip="保存当前场景为文件(.json)"
+        tooltip={t('transform.saveTip')}
         tooltipPlace="bottom"
         onPress={saveSceneToFile}
       />
       <Button
-        label="读取"
+        label={t('transform.load')}
         icon="📂"
         compact={compact}
-        tooltip="从文件读取场景(.json)"
+        tooltip={t('transform.loadTip')}
         tooltipPlace="bottom"
         onPress={loadSceneFromFile}
       />

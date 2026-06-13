@@ -2,7 +2,7 @@
   "id": "painting",
   "name": "壁画",
   "type": "prop",
-  "category": "门窗装饰",
+  "category": "装饰",
   "footprint": [1.2, 0.1],
   "height": 1.95,
   "source": {

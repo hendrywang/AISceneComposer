@@ -2,7 +2,7 @@
   "id": "wallTV",
   "name": "壁挂电视",
   "type": "prop",
-  "category": "门窗装饰",
+  "category": "装饰",
   "footprint": [1.6, 0.1],
   "height": 1.9,
   "source": {

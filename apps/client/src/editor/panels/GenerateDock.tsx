@@ -1,4 +1,5 @@
 import { View, Text, TextInput, Image, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useEditor } from '../../store/editorStore';
 import { useUI } from '../../ui/uiStore';
 import { Backdrop } from '../../ui/primitives/Backdrop';
@@ -6,9 +7,9 @@ import { Button } from '../../ui/primitives/Button';
 import { color, space, radius, font, z, elevation } from '../../ui/theme';
 import type { RenderStyle } from '@asc/shared-types';
 
-const STYLE_OPTIONS: { id: RenderStyle; label: string }[] = [
-  { id: 'realistic', label: '写实' },
-  { id: 'anime', label: '二次元' },
+const STYLE_OPTIONS: { id: RenderStyle; labelKey: string }[] = [
+  { id: 'realistic', labelKey: 'generate.styleRealistic' },
+  { id: 'anime', labelKey: 'generate.styleAnime' },
 ];
 
 /**
@@ -16,6 +17,7 @@ const STYLE_OPTIONS: { id: RenderStyle; label: string }[] = [
  * 提示词 + 画风 + 触发生成,并就地回显结果(可下载)。生成中锁交互、禁关闭。
  */
 export function GenerateDock() {
+  const { t } = useTranslation();
   const open = useUI((s) => s.generateOpen);
   const close = useUI((s) => s.closeGenerate);
 
@@ -47,32 +49,32 @@ export function GenerateDock() {
       <View style={styles.center} pointerEvents="box-none">
         <View style={styles.card} pointerEvents="auto">
           <View style={styles.header}>
-            <Text style={styles.title}>AI 出图</Text>
+            <Text style={styles.title}>{t('generate.title')}</Text>
             <Pressable onPress={running ? undefined : close} hitSlop={8}>
               <Text style={styles.close}>✕</Text>
             </Pressable>
           </View>
 
           <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
-            <Text style={styles.hint}>构图来自当前取景。在这里描述画面风格、光线与氛围。</Text>
+            <Text style={styles.hint}>{t('generate.hint')}</Text>
 
-            <Text style={styles.label}>提示词</Text>
+            <Text style={styles.label}>{t('generate.prompt')}</Text>
             <TextInput
               value={prompt}
               onChangeText={setPrompt}
               editable={!running}
               multiline
-              placeholder="例:黄昏暖光下的客厅,电影感,写实细节…"
+              placeholder={t('generate.promptPlaceholder')}
               placeholderTextColor={color.textFaint}
               style={styles.input}
             />
 
-            <Text style={styles.label}>画风</Text>
+            <Text style={styles.label}>{t('generate.style')}</Text>
             <View style={styles.styleRow}>
               {STYLE_OPTIONS.map((o) => (
                 <Button
                   key={o.id}
-                  label={o.label}
+                  label={t(o.labelKey)}
                   tone="accent"
                   active={style === o.id}
                   disabled={running}
@@ -83,7 +85,7 @@ export function GenerateDock() {
             </View>
 
             <Button
-              label={running ? '生成中…' : '生成'}
+              label={running ? t('common.generating') : t('common.generate')}
               icon="✨"
               tone="accent"
               active
@@ -97,8 +99,8 @@ export function GenerateDock() {
               <View style={styles.resultWrap}>
                 <Image source={{ uri: resultUrl }} style={styles.result} resizeMode="contain" />
                 <View style={styles.resultBtns}>
-                  <Button label="下载" icon="⬇" onPress={downloadResult} grow />
-                  <Button label="重置" onPress={clearGen} grow />
+                  <Button label={t('common.download')} icon="⬇" onPress={downloadResult} grow />
+                  <Button label={t('common.reset')} onPress={clearGen} grow />
                 </View>
               </View>
             ) : null}

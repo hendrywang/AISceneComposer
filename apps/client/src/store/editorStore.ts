@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { Vec3, Camera, CameraPreset, RenderStyle } from '@asc/shared-types';
 import { getDef, modelDims, SCENES, type ModelDef } from '@asc/resource-library';
 import { generateFromPreview } from '../editor/generate';
+import i18n from '../i18n';
 
 export type TransformMode = 'translate' | 'rotate';
 export type ObjectKind = 'actor' | 'prop' | 'environment';
@@ -40,6 +41,7 @@ export type CameraCmd =
   | { type: 'apply'; view: Camera }
   | { type: 'preset'; preset: CameraPreset }
   | { type: 'fov'; value: number }
+  | { type: 'reset' }
   | null;
 
 interface EditorState {
@@ -217,7 +219,16 @@ export const useEditor = create<EditorState>((set, get) => ({
       };
     }),
 
-  clear: () => set({ objects: [], selectedId: null }),
+  // 新建一个完全空白的场景:清空物体 / 机位 / 参考底图,并复位相机视角(坐标系归位)。
+  clear: () =>
+    set({
+      objects: [],
+      selectedId: null,
+      cameras: [],
+      bgImageUrl: null,
+      bgAspect: null,
+      cameraCmd: { type: 'reset' },
+    }),
   select: (id) => set({ selectedId: id }),
 
   removeSelected: () =>
@@ -257,7 +268,9 @@ export const useEditor = create<EditorState>((set, get) => ({
   runPreset: (preset) => set({ cameraCmd: { type: 'preset', preset } }),
   setFov: (value) => set({ cameraCmd: { type: 'fov', value } }),
   requestSaveCamera: () =>
-    set((s) => ({ cameraCmd: { type: 'save', name: `机位 ${s.cameras.length + 1}` } })),
+    set((s) => ({
+      cameraCmd: { type: 'save', name: i18n.t('camera.savedName', { n: s.cameras.length + 1 }) },
+    })),
   applyCamera: (view) => set({ cameraCmd: { type: 'apply', view } }),
   removeCamera: (id) => set((s) => ({ cameras: s.cameras.filter((c) => c.id !== id) })),
   addCamera: (c) => set((s) => ({ cameras: [...s.cameras, { ...c, id: uid() }] })),
@@ -271,7 +284,7 @@ export const useEditor = create<EditorState>((set, get) => ({
     const { prompt, style, genStatus } = get();
     if (genStatus === 'running') return; // 防重复提交
     if (!prompt.trim()) {
-      set({ genStatus: 'error', genError: '请先输入提示词' });
+      set({ genStatus: 'error', genError: i18n.t('errors.enterPrompt') });
       return;
     }
     set({ genStatus: 'running', genError: null, genResultUrl: null });
@@ -279,7 +292,7 @@ export const useEditor = create<EditorState>((set, get) => ({
       const url = await generateFromPreview({ prompt: prompt.trim(), style });
       set({ genStatus: 'done', genResultUrl: url });
     } catch (e) {
-      set({ genStatus: 'error', genError: (e as Error)?.message ?? '生成失败' });
+      set({ genStatus: 'error', genError: (e as Error)?.message ?? i18n.t('errors.generateFailed') });
     }
   },
 }));

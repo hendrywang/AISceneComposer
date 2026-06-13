@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useEditor, type EditorObject } from '../../store/editorStore';
 import { POSE_OPTIONS } from '@asc/resource-library';
 import { Button } from '../../ui/primitives/Button';
@@ -14,15 +15,16 @@ export function useSelectedActor(): EditorObject | null {
 
 /** 检视面板:目前 = 角色姿势。未来可加颜色/缩放等对象属性。纯内容。 */
 export function Inspector({ actor, compact }: { actor: EditorObject; compact?: boolean }) {
+  const { t } = useTranslation();
   const setPose = useEditor((s) => s.setPose);
   return (
     <View style={styles.wrap}>
-      <Text style={styles.label}>姿势</Text>
+      <Text style={styles.label}>{t('inspector.pose')}</Text>
       <View style={styles.row}>
         {POSE_OPTIONS.map((po) => (
           <Button
             key={po.id}
-            label={po.label}
+            label={t(`pose.${po.id}`, { defaultValue: po.label })}
             compact={compact}
             active={actor.poseId === po.id}
             onPress={() => setPose(actor.id, po.id)}

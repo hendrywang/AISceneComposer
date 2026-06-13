@@ -2,7 +2,7 @@
   "id": "window",
   "name": "窗户",
   "type": "prop",
-  "category": "门窗装饰",
+  "category": "装饰",
   "footprint": [1.4, 0.14],
   "height": 2.15,
   "source": {

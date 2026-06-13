@@ -44,6 +44,10 @@ export default function CameraRig() {
         camera.updateProjectionMatrix();
         invalidate();
         break;
+      case 'reset':
+        // 复位到默认视角(与 Editor.tsx Canvas 初始相机一致)。
+        apply({ position: [5, 4, 6], target: [0, 0, 0], fov: 55 });
+        break;
       case 'save':
         addCamera({
           name: cmd.name,

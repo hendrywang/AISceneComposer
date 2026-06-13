@@ -21,7 +21,7 @@ const GEN_DIR = join(PKG, 'src', 'generated');
 const PUBLIC_DIR = resolve(PKG, '..', '..', 'apps', 'client', 'public', 'models');
 
 // 库面板分类 Tab 的顺序;表外的分类按字母排在其后
-const CATEGORY_ORDER = ['人物', '家具', '门窗装饰', '场景元素'];
+const CATEGORY_ORDER = ['人物', '家具', '装饰', '场景'];
 const VALID_TYPES = ['actor', 'prop', 'environment'];
 
 const errors: string[] = [];

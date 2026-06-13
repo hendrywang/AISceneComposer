@@ -1,9 +1,11 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useBreakpoint } from './useBreakpoint';
 import { useUI, type SheetKind } from './uiStore';
 import { color, space, font, z, layout } from './theme';
 import { safeTop, safeBottom } from './safeArea';
 import { Panel } from './primitives/Panel';
+import { Button } from './primitives/Button';
 import { Drawer } from './primitives/Drawer';
 import { BottomSheet } from './primitives/BottomSheet';
 import { InsertDock } from '../editor/panels/InsertDock';
@@ -13,6 +15,7 @@ import { Inspector, useSelectedActor } from '../editor/panels/Inspector';
 import { CameraDeck } from '../editor/panels/CameraDeck';
 import { PreviewDock } from '../editor/panels/PreviewDock';
 import { GenerateDock } from '../editor/panels/GenerateDock';
+import { SettingsDock } from '../editor/panels/SettingsDock';
 import { SelectionHud } from '../editor/panels/SelectionHud';
 
 /**
@@ -29,7 +32,29 @@ export function LayoutShell() {
       {device === 'phone' && <PhoneChrome />}
       <SelectionHud />
       <PreviewDock />
+      <SettingsButton />
       <GenerateDock />
+      <SettingsDock />
+    </View>
+  );
+}
+
+/** 屏幕右上角常驻设置入口:与顶部工具条同款(Panel + Button),高度对齐、风格统一。 */
+function SettingsButton() {
+  const { t } = useTranslation();
+  const { isDesktop } = useBreakpoint();
+  const openSettings = useUI((s) => s.openSettings);
+  return (
+    <View style={styles.settingsWrap} pointerEvents="box-none">
+      <Panel>
+        <Button
+          label="⚙"
+          tooltip={t('nav.settings')}
+          tooltipPlace="bottom"
+          compact={isDesktop}
+          onPress={openSettings}
+        />
+      </Panel>
     </View>
   );
 }
@@ -70,6 +95,7 @@ function DesktopChrome() {
 
 /* ── iPad 竖屏 / 小平板:顶部条 + 抽屉库 + 底部相机 + 浮动预览 ── */
 function TabletChrome() {
+  const { t } = useTranslation();
   const actor = useSelectedActor();
   const libraryOpen = useUI((s) => s.libraryOpen);
   const toggleLibrary = useUI((s) => s.toggleLibrary);
@@ -86,7 +112,7 @@ function TabletChrome() {
               style={({ pressed }) => [styles.menuBtn, pressed && styles.pressed]}
             >
               <Text style={styles.menuIcon}>☰</Text>
-              <Text style={styles.menuLabel}>资产</Text>
+              <Text style={styles.menuLabel}>{t('nav.assets')}</Text>
             </Pressable>
             <View style={styles.vsep} />
             <TransformToolbar compact />
@@ -111,7 +137,7 @@ function TabletChrome() {
       </View>
 
       {/* 左侧资产抽屉 */}
-      <Drawer open={libraryOpen} onClose={() => setLibrary(false)} title="资产库">
+      <Drawer open={libraryOpen} onClose={() => setLibrary(false)} title={t('nav.assetLibrary')}>
         <InsertDock onItemAdded={() => setLibrary(false)} />
       </Drawer>
     </>
@@ -120,6 +146,7 @@ function TabletChrome() {
 
 /* ── 手机:顶部工具(选中时)+ 底部 4 Tab + 弹层 ── */
 function PhoneChrome() {
+  const { t } = useTranslation();
   const actor = useSelectedActor();
   const activeSheet = useUI((s) => s.activeSheet);
   const openSheet = useUI((s) => s.openSheet);
@@ -147,26 +174,26 @@ function PhoneChrome() {
 
       {/* 底部 Tab 栏 */}
       <View style={[styles.tabBar, { paddingBottom: safeBottom }]} pointerEvents="auto">
-        <Tab icon="➕" label="添加" active={activeSheet === 'add'} onPress={() => open('add')} />
+        <Tab icon="➕" label={t('nav.add')} active={activeSheet === 'add'} onPress={() => open('add')} />
         <Tab
           icon="🎭"
-          label="姿势"
+          label={t('nav.pose')}
           active={activeSheet === 'pose'}
           disabled={!actor}
           onPress={() => open('pose')}
         />
-        <Tab icon="📷" label="机位" active={activeSheet === 'camera'} onPress={() => open('camera')} />
-        <Tab icon="🖼" label="出图" active={previewExpanded} onPress={openFrame} />
+        <Tab icon="📷" label={t('nav.camera')} active={activeSheet === 'camera'} onPress={() => open('camera')} />
+        <Tab icon="🖼" label={t('nav.render')} active={previewExpanded} onPress={openFrame} />
       </View>
 
       {/* 弹层:添加 / 姿势 / 机位 */}
-      <BottomSheet open={activeSheet === 'add'} title="添加资产" onClose={closeSheet}>
+      <BottomSheet open={activeSheet === 'add'} title={t('nav.addAssets')} onClose={closeSheet}>
         <AssetPicker onItemAdded={closeSheet} />
       </BottomSheet>
-      <BottomSheet open={activeSheet === 'pose'} title="姿势" onClose={closeSheet}>
+      <BottomSheet open={activeSheet === 'pose'} title={t('nav.pose')} onClose={closeSheet}>
         {actor ? <Inspector actor={actor} /> : null}
       </BottomSheet>
-      <BottomSheet open={activeSheet === 'camera'} title="相机 · 镜头" onClose={closeSheet}>
+      <BottomSheet open={activeSheet === 'camera'} title={t('nav.cameraLens')} onClose={closeSheet}>
         <CameraDeck />
       </BottomSheet>
     </>
@@ -273,6 +300,9 @@ const styles = StyleSheet.create({
   tabIcon: { fontSize: 20 },
   tabLabel: { color: color.textDim, fontSize: font.hint, fontWeight: font.weightBtn },
   tabActiveText: { color: color.accent },
+
+  /* settings gear (fixed to screen top-right, all breakpoints) */
+  settingsWrap: { position: 'absolute', top: safeTop, right: space.lg, marginTop: space.lg, zIndex: z.toolbar },
 
   pressed: { opacity: 0.7 },
 });

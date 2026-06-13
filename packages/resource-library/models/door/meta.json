@@ -2,7 +2,7 @@
   "id": "door",
   "name": "门",
   "type": "prop",
-  "category": "门窗装饰",
+  "category": "装饰",
   "footprint": [0.95, 0.14],
   "height": 2.05,
   "source": {

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useEditor } from '../../store/editorStore';
 import { Button } from '../../ui/primitives/Button';
 import { Chip } from '../../ui/primitives/Chip';
@@ -6,6 +7,7 @@ import { color, space, font } from '../../ui/theme';
 
 /** 相机/镜头:电影预设 / FOV / 存机位 / 已存机位。纯内容。 */
 export function CameraDeck({ compact }: { compact?: boolean }) {
+  const { t } = useTranslation();
   const runPreset = useEditor((s) => s.runPreset);
   const setFov = useEditor((s) => s.setFov);
   const requestSaveCamera = useEditor((s) => s.requestSaveCamera);
@@ -16,86 +18,86 @@ export function CameraDeck({ compact }: { compact?: boolean }) {
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>
-        <Text style={styles.label}>镜头</Text>
+        <Text style={styles.label}>{t('camera.lens')}</Text>
         <Button
-          label="双人"
+          label={t('camera.twoShot')}
           icon="👥"
           compact={compact}
-          tooltip="双人镜头:框住主角和最近的另一个人"
+          tooltip={t('camera.twoShotTip')}
           tooltipPlace="top"
           onPress={() => runPreset('two-shot')}
         />
         <Button
-          label="合影"
+          label={t('camera.group')}
           icon="👨‍👩‍👧"
           compact={compact}
-          tooltip="合影:把所有角色都框进画面"
+          tooltip={t('camera.groupTip')}
           tooltipPlace="top"
           onPress={() => runPreset('group')}
         />
         <Button
-          label="过肩"
+          label={t('camera.ots')}
           icon="🎬"
           compact={compact}
-          tooltip="过肩镜头:越过近端角色的肩膀看对方"
+          tooltip={t('camera.otsTip')}
           tooltipPlace="top"
           onPress={() => runPreset('ots')}
         />
         <Button
-          label="仰拍"
+          label={t('camera.low')}
           icon="🔼"
           compact={compact}
-          tooltip="仰拍:低机位向上看主角"
+          tooltip={t('camera.lowTip')}
           tooltipPlace="top"
           onPress={() => runPreset('low')}
         />
         <Button
-          label="俯拍"
+          label={t('camera.high')}
           icon="🔽"
           compact={compact}
-          tooltip="俯拍:高机位向下看主角"
+          tooltip={t('camera.highTip')}
           tooltipPlace="top"
           onPress={() => runPreset('high')}
         />
         <Button
-          label="特写"
+          label={t('camera.closeup')}
           icon="🔍"
           compact={compact}
-          tooltip="特写:聚焦主角头部"
+          tooltip={t('camera.closeupTip')}
           tooltipPlace="top"
           onPress={() => runPreset('closeup')}
         />
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>FOV</Text>
+        <Text style={styles.label}>{t('camera.fov')}</Text>
         <Button
-          label="广角"
+          label={t('camera.wide')}
           compact={compact}
-          tooltip="广角 75°:视野大、透视夸张"
+          tooltip={t('camera.wideTip')}
           tooltipPlace="top"
           onPress={() => setFov(75)}
         />
         <Button
-          label="标准"
+          label={t('camera.normal')}
           compact={compact}
-          tooltip="标准 50°:接近肉眼视角"
+          tooltip={t('camera.normalTip')}
           tooltipPlace="top"
           onPress={() => setFov(50)}
         />
         <Button
-          label="长焦"
+          label={t('camera.tele')}
           compact={compact}
-          tooltip="长焦 28°:压缩空间、背景拉近"
+          tooltip={t('camera.teleTip')}
           tooltipPlace="top"
           onPress={() => setFov(28)}
         />
         <View style={styles.sep} />
         <Button
-          label="存机位"
+          label={t('camera.save')}
           icon="＋"
           compact={compact}
-          tooltip="保存当前机位,之后可一键切回"
+          tooltip={t('camera.saveTip')}
           tooltipPlace="top"
           onPress={requestSaveCamera}
         />
@@ -103,7 +105,7 @@ export function CameraDeck({ compact }: { compact?: boolean }) {
 
       {cameras.length > 0 && (
         <View style={styles.row}>
-          <Text style={styles.label}>机位</Text>
+          <Text style={styles.label}>{t('nav.camera')}</Text>
           {cameras.map((c) => (
             <Chip
               key={c.id}

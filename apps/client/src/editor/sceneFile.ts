@@ -1,4 +1,5 @@
 import { useEditor, type SceneSnapshot } from '../store/editorStore';
+import i18n from '../i18n';
 
 // 场景的本地保存/读取(Web)。保存 = 下载一份 .json(也天然是可分享的场景文件);
 // 读取 = 选文件还原。Firebase(D13)接通后,同一份快照可改为写/读 Firestore。
@@ -49,7 +50,7 @@ export function loadSceneFromFile() {
         if (!snap || !Array.isArray(snap.objects)) throw new Error('bad shape');
         useEditor.getState().loadSnapshot(snap);
       } catch {
-        if (typeof window !== 'undefined') window.alert('无法读取:不是有效的场景文件(.json)');
+        if (typeof window !== 'undefined') window.alert(i18n.t('errors.badSceneFile'));
       }
     };
     reader.readAsText(file);

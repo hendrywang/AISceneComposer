@@ -1,7 +1,7 @@
 import type { RenderStyle, GenerateResponse } from '@asc/shared-types';
 import { previewControl } from './cameraSync';
-
-const EXPORT_LONG_EDGE = 1920; // 与 PreviewDock 导出分辨率一致(长边 FHD)
+import { useSettings } from '../store/settingsStore';
+import i18n from '../i18n';
 
 // 必须写成完整静态成员表达式 —— Expo 在 web 构建时按字面量内联 EXPO_PUBLIC_*(禁止解构)。
 const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080';
@@ -24,12 +24,13 @@ async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
  * 注意:capture() 同步改写共享预览画布,必须在任何 await 之前调用、立即拿到 dataUrl。
  */
 export async function generateFromPreview(args: GenerateArgs): Promise<string> {
-  const longEdge = args.longEdge ?? EXPORT_LONG_EDGE;
+  const { geminiApiKey, model, outputResolution } = useSettings.getState();
+  const longEdge = args.longEdge ?? Number(outputResolution);
   const capture = previewControl.capture;
-  if (!capture) throw new Error('预览画布尚未就绪,请稍后再试');
+  if (!capture) throw new Error(i18n.t('errors.previewNotReady'));
 
   const dataUrl = capture(longEdge); // 同步:先于任何 await
-  if (!dataUrl) throw new Error('取景截图失败');
+  if (!dataUrl) throw new Error(i18n.t('errors.captureFailed'));
 
   const blob = await dataUrlToBlob(dataUrl); // image/png
 
@@ -38,17 +39,22 @@ export async function generateFromPreview(args: GenerateArgs): Promise<string> {
   formData.append('blockingImage', blob, 'blocking.png');
   formData.append('prompt', args.prompt);
   formData.append('style', args.style);
+  formData.append('model', model);
 
-  // 接入 Firebase Auth 后在此加:headers: { Authorization: `Bearer ${idToken}` }
+  // BYOK:有 Key 才带 x-gemini-key 头(留空则让后端回退到 env Key)。
+  // 接入 Firebase Auth 后在此加:Authorization: `Bearer ${idToken}`
+  const headers: Record<string, string> = {};
+  if (geminiApiKey) headers['x-gemini-key'] = geminiApiKey;
+
   let resp: Response;
   try {
-    resp = await fetch(`${API_BASE}/api/generate`, { method: 'POST', body: formData });
+    resp = await fetch(`${API_BASE}/api/generate`, { method: 'POST', headers, body: formData });
   } catch {
-    throw new Error(`无法连接生成服务(${API_BASE})。本地需先启动后端:pnpm api`);
+    throw new Error(i18n.t('errors.cannotConnect', { base: API_BASE }));
   }
 
   if (!resp.ok) {
-    let msg = `生成失败(${resp.status})`;
+    let msg = i18n.t('errors.genFailedStatus', { status: resp.status });
     try {
       const body = (await resp.json()) as { error?: string };
       if (body?.error) msg = body.error;
@@ -59,6 +65,6 @@ export async function generateFromPreview(args: GenerateArgs): Promise<string> {
   }
 
   const data = (await resp.json()) as GenerateResponse;
-  if (!data?.imageUrl) throw new Error('服务端未返回图像');
+  if (!data?.imageUrl) throw new Error(i18n.t('errors.serverNoImage'));
   return data.imageUrl;
 }

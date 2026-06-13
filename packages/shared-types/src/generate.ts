@@ -20,3 +20,11 @@ export interface GenerateResponse {
   imageUrl: string;
   createdAt: number;
 }
+
+/** 一个可用出图模型(客户端用用户自带 Key 直接从 Google 列出) */
+export interface ModelInfo {
+  /** 模型 id(去掉 models/ 前缀),用于 generateContent 的 model 字段 */
+  id: string;
+  /** 展示名(Google 的 displayName,缺省回退到 id) */
+  label: string;
+}

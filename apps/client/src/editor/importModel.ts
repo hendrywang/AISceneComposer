@@ -2,6 +2,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { useEditor } from '../store/editorStore';
 import type { ModelDef } from '@asc/resource-library';
+import i18n from '../i18n';
 
 // 运行时上传 glTF。关键:把上传内容**归一化成「自包含 GLB 的 data URL」**——
 //   - 单个 .glb:直接 data URL;
@@ -34,7 +35,7 @@ async function filesToGlb(files: File[]): Promise<{ name: string; dataUrl: strin
   }
 
   const entry = files.find((f) => /\.glb$/i.test(f.name)) ?? files.find((f) => /\.gltf$/i.test(f.name));
-  if (!entry) throw new Error('未找到 .gltf 或 .glb 入口文件');
+  if (!entry) throw new Error(i18n.t('errors.noEntryFile'));
 
   // 自包含的单个 .glb:直接用,无需重打包
   if (/\.glb$/i.test(entry.name)) {
@@ -46,7 +47,7 @@ async function filesToGlb(files: File[]): Promise<{ name: string; dataUrl: strin
   const toBlob = (uri: string): string => {
     if (!uri || uri.startsWith('data:')) return uri;
     const f = byPath.get(norm(uri)) ?? byPath.get(norm(uri.split('/').pop() ?? ''));
-    if (!f) throw new Error(`缺少依赖文件:${uri}(请选包含 .bin / textures 的整个文件夹)`);
+    if (!f) throw new Error(i18n.t('errors.missingDep', { uri }));
     const u = URL.createObjectURL(f);
     blobUrls.push(u);
     return u;
@@ -79,14 +80,14 @@ async function filesToGlb(files: File[]): Promise<{ name: string; dataUrl: strin
 async function register(files: File[], onDone?: () => void) {
   const totalMB = files.reduce((s, f) => s + f.size, 0) / 1024 / 1024;
   if (totalMB > MAX_MB && typeof window !== 'undefined') {
-    if (!window.confirm(`模型较大(${totalMB.toFixed(1)}MB),可能影响性能与存档体积。仍要导入?`)) return;
+    if (!window.confirm(i18n.t('errors.importTooLarge', { mb: totalMB.toFixed(1) }))) return;
   }
   try {
     const { name, dataUrl } = await filesToGlb(files);
     const id = `user-${Date.now().toString(36)}-${seq++}`;
     const def: ModelDef = {
       id,
-      name: name.replace(/\.(glb|gltf)$/i, '').slice(0, 20) || '我的模型',
+      name: name.replace(/\.(glb|gltf)$/i, '').slice(0, 20) || i18n.t('category.mine'),
       type: 'prop',
       category: '我的模型',
       footprint: [1, 1],
@@ -98,7 +99,9 @@ async function register(files: File[], onDone?: () => void) {
     st.add(id);
     onDone?.();
   } catch (e) {
-    if (typeof window !== 'undefined') window.alert('导入失败:' + ((e as Error)?.message ?? e));
+    if (typeof window !== 'undefined') {
+      window.alert(i18n.t('errors.importFailed', { msg: (e as Error)?.message ?? String(e) }));
+    }
   }
 }
 
