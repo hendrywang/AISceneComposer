@@ -1,6 +1,7 @@
 import type { ModelDef, ScenePreset } from './types';
 import { CATALOG } from './generated/catalog';
 import { SCENES } from './scenes';
+import { POSES } from './poses';
 
 /** 按 id 取模型定义 */
 export function getDef(id: string): ModelDef | undefined {
@@ -19,7 +20,11 @@ export function modelDims(def: ModelDef): { height: number; footprint: [number, 
  * 贡献护栏(纯函数,零依赖):校验目录与场景的一致性,返回错误清单(空数组 = 通过)。
  * 配套 `pnpm --filter @asc/resource-library check` 在 PR 时跑。类型系统是第一道关,这是第二道。
  */
-export function validateCatalog(catalog: ModelDef[] = CATALOG, scenes: ScenePreset[] = SCENES): string[] {
+export function validateCatalog(
+  catalog: ModelDef[] = CATALOG,
+  scenes: ScenePreset[] = SCENES,
+  poses: Record<string, unknown> = POSES,
+): string[] {
   const errors: string[] = [];
   const ids = new Set<string>();
   for (const d of catalog) {
@@ -36,6 +41,10 @@ export function validateCatalog(catalog: ModelDef[] = CATALOG, scenes: ScenePres
     for (const pl of sc.placements) {
       if (!ids.has(pl.modelId)) {
         errors.push(`场景「${sc.id}」引用了不存在的模型:${pl.modelId}`);
+      }
+      // 预摆姿势必须是已定义的 POSES key(数据期发现拼写错)
+      if (pl.poseId && !(pl.poseId in poses)) {
+        errors.push(`场景「${sc.id}」引用了不存在的姿势:${pl.poseId}`);
       }
     }
   }

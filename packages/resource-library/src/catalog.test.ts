@@ -43,3 +43,21 @@ test('validateCatalog catches duplicate ids, empty primitives, missing glTF lice
   assert.ok(errors.some((e) => e.includes('gltf-no-license')));
   assert.ok(errors.some((e) => e.includes('bad-scene')));
 });
+
+test('validateCatalog catches scene placements with an unknown poseId', () => {
+  const scenes: ScenePreset[] = [
+    {
+      id: 'pose-bad',
+      name: 'Bad Pose',
+      placements: [{ modelId: 'box', position: [0, 0, 0], poseId: 'nope' }],
+    },
+    {
+      id: 'pose-ok',
+      name: 'OK Pose',
+      placements: [{ modelId: 'box', position: [0, 0, 0], poseId: 'stand' }],
+    },
+  ];
+  const errors = validateCatalog([primitive], scenes);
+  assert.ok(errors.some((e) => e.includes('pose-bad') && e.includes('nope')));
+  assert.ok(!errors.some((e) => e.includes('pose-ok')));
+});

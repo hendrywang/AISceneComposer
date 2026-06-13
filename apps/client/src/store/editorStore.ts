@@ -119,6 +119,7 @@ function makeObject(
   position: number[],
   rotationY: number,
   actorColorIdx: number,
+  poseId?: string,
 ): EditorObject {
   const dims = modelDims(def);
   const isActor = def.type === 'actor';
@@ -130,7 +131,7 @@ function makeObject(
     rotationY,
     color: isActor ? ACTOR_COLORS[actorColorIdx % ACTOR_COLORS.length]! : (def.defaultColor ?? '#b8b2a6'),
     size: [dims.footprint[0], dims.height, dims.footprint[1]],
-    poseId: isActor ? 'stand' : undefined,
+    poseId: isActor ? (poseId ?? 'stand') : undefined,
     label: def.name,
   };
 }
@@ -199,8 +200,9 @@ export const useEditor = create<EditorState>((set, get) => ({
         .map((pl) => {
           const def = getDef(pl.modelId);
           if (!def) return null;
-          const idx = def.type === 'actor' ? actorIdx++ : 0;
-          return makeObject(def, pl.position, pl.rotationY ?? 0, idx);
+          // actor 配色:placement 指定 colorIndex 优先(固定身份),否则按出场顺序轮换。
+          const idx = def.type === 'actor' ? (pl.colorIndex ?? actorIdx++) : 0;
+          return makeObject(def, pl.position, pl.rotationY ?? 0, idx, pl.poseId);
         })
         .filter((o): o is EditorObject => o !== null);
       return { objects, selectedId: null };

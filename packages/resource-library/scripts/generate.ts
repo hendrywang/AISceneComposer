@@ -21,7 +21,7 @@ const GEN_DIR = join(PKG, 'src', 'generated');
 const PUBLIC_DIR = resolve(PKG, '..', '..', 'apps', 'client', 'public', 'models');
 
 // 库面板分类 Tab 的顺序;表外的分类按字母排在其后
-const CATEGORY_ORDER = ['人物', '家具', '装饰', '场景'];
+const CATEGORY_ORDER = ['人物', '家具', '装饰', '室外', '场景'];
 const VALID_TYPES = ['actor', 'prop', 'environment'];
 
 const errors: string[] = [];
@@ -47,6 +47,15 @@ function validate(id: string, dir: string, d: any, toCopy: [string, string][]) {
     }
   } else if (s.kind === 'roomShell') {
     if (s.variant !== 'plain' && s.variant !== 'balcony') fail(id, `roomShell variant 非法:${s.variant}`);
+  } else if (s.kind === 'outdoorShell') {
+    const enums: Record<string, string[]> = {
+      ground: ['grass', 'stone', 'paving', 'sand'],
+      sky: ['day', 'dusk', 'night', 'overcast'],
+      backdrop: ['none', 'cityline', 'treeline', 'wall'],
+    };
+    for (const [k, allowed] of Object.entries(enums)) {
+      if (s[k] !== undefined && !allowed.includes(s[k])) fail(id, `outdoorShell ${k} 非法:${s[k]}`);
+    }
   } else if (s.kind === 'gltf') {
     if (!d.license?.license) fail(id, 'gltf 必须带 license(开源再分发命脉)');
     const files = [s.file, ...Object.values(s.poses ?? {})] as string[];

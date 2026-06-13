@@ -59,15 +59,25 @@ export type Pose = Partial<Record<JointName, [number, number, number]>>;
 /**
  * 模型来源:决定 ModelView 怎么渲染。新增一种渲染方式 = 在这里加一个 kind,并在
  * editor/ModelView 加一条分支。
- *   - human:     参数化人体(Mannequin)
- *   - primitive: 若干 box/薄片拼装(PrimitiveModel),自包含、可序列化
- *   - roomShell: 单面内向反向盒房间(RoomShell)
- *   - gltf:      真实 3D 资产(GltfModel);poses 为「姿势名 → 该姿势的静态 glTF url」(D4)
+ *   - human:       参数化人体(Mannequin)
+ *   - primitive:   若干 box/薄片拼装(PrimitiveModel),自包含、可序列化
+ *   - roomShell:   单面内向反向盒房间(RoomShell)
+ *   - outdoorShell:室外环境(OutdoorShell):大地面 + 渐变天空穹 + 可选远景剪影
+ *   - gltf:        真实 3D 资产(GltfModel);poses 为「姿势名 → 该姿势的静态 glTF url」(D4)
  */
 export type ModelSource =
   | { kind: 'human'; body: BodyParams }
   | { kind: 'primitive'; parts: Part[] }
   | { kind: 'roomShell'; variant: 'plain' | 'balcony' }
+  | {
+      kind: 'outdoorShell';
+      /** 地面质感(取色);默认 grass */
+      ground?: 'grass' | 'stone' | 'paving' | 'sand';
+      /** 天空调性(渐变 + 室外光);默认 day */
+      sky?: 'day' | 'dusk' | 'night' | 'overcast';
+      /** 远景剪影(纵深/地平线参照);默认 none */
+      backdrop?: 'none' | 'cityline' | 'treeline' | 'wall';
+    }
   /**
    * 真实 3D 资产。`file` / `poses` 的值是「服务相对路径」,如 `models/<id>/model.glb`
    * (生成器从模型文件夹展开而来);前端 `resolveModelUri()` 把它解析成可加载 URI
@@ -114,6 +124,10 @@ export interface Placement {
   modelId: string;
   position: [number, number, number];
   rotationY?: number;
+  /** 仅 actor:预摆姿势(POSES 的 key);省略 = 'stand' */
+  poseId?: string;
+  /** 仅 actor:固定配色序号(ACTOR_COLORS 下标),用于区分身份;省略 = 按出场顺序自动轮换 */
+  colorIndex?: number;
 }
 
 /** 场景预设 = 房间壳 + 一组家具/门窗摆位 */

@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useEditor } from '../store/editorStore';
 import { ObjectContent } from './SceneView';
+import { SceneLighting } from './SceneLighting';
 import { cameraSync, previewControl } from './cameraSync';
 
 /** 预览相机:每帧镜像主视图机位(位置/朝向/FOV);画幅比例由 Canvas 容器尺寸决定 */
@@ -34,8 +35,7 @@ function PreviewContent() {
   const objects = useEditor((s) => s.objects);
   return (
     <>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[3, 6, 2]} intensity={1.2} />
+      <SceneLighting />
       {objects.map((o) => (
         <group key={o.id} position={[o.position[0], 0, o.position[2]]} rotation={[0, o.rotationY, 0, 'YXZ']}>
           <ObjectContent obj={o} />

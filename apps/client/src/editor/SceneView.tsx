@@ -6,6 +6,7 @@ import { useEditor, type EditorObject } from '../store/editorStore';
 import { useUI } from '../ui/uiStore';
 import { getDef } from '@asc/resource-library';
 import { ModelView } from './ModelView';
+import { SceneLighting } from './SceneLighting';
 import CameraRig from './CameraRig';
 import { cameraSync } from './cameraSync';
 
@@ -172,8 +173,7 @@ export default function SceneView({ gizmoMargin = [72, 72] }: { gizmoMargin?: [n
 
   return (
     <>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[3, 6, 2]} intensity={1.2} />
+      <SceneLighting />
 
       <Grid infiniteGrid sectionColor="#3a3a3a" cellColor="#202020" fadeDistance={40} />
 
