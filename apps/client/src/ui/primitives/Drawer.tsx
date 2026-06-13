@@ -8,21 +8,24 @@ export interface DrawerProps {
   onClose: () => void;
   title?: string;
   width?: number;
+  /** 从哪侧滑入(默认左:资产库;右:检视面板) */
+  side?: 'left' | 'right';
   children: React.ReactNode;
 }
 
 /**
- * 左侧滑入抽屉(iPad 竖屏资产库)。
+ * 侧边滑入抽屉(iPad 竖屏:左=资产库、右=检视面板)。
  * 常挂载、用 translateX/opacity 动画进出;关闭时 pointerEvents=none → 不挡画布。
  */
-export function Drawer({ open, onClose, title, width = layout.drawerW, children }: DrawerProps) {
-  const tx = useRef(new Animated.Value(open ? 0 : -width)).current;
+export function Drawer({ open, onClose, title, width = layout.drawerW, side = 'left', children }: DrawerProps) {
+  const hidden = side === 'right' ? width : -width;
+  const tx = useRef(new Animated.Value(open ? 0 : hidden)).current;
   const fade = useRef(new Animated.Value(open ? 1 : 0)).current;
 
   useEffect(() => {
-    Animated.timing(tx, { toValue: open ? 0 : -width, duration: 220, useNativeDriver: false }).start();
+    Animated.timing(tx, { toValue: open ? 0 : hidden, duration: 220, useNativeDriver: false }).start();
     Animated.timing(fade, { toValue: open ? 1 : 0, duration: 220, useNativeDriver: false }).start();
-  }, [open, width, tx, fade]);
+  }, [open, hidden, tx, fade]);
 
   return (
     <View pointerEvents={open ? 'auto' : 'none'} style={[StyleSheet.absoluteFill, { zIndex: z.drawer }]}>
@@ -32,7 +35,13 @@ export function Drawer({ open, onClose, title, width = layout.drawerW, children 
       <Animated.View
         style={[
           styles.panel,
-          { width, transform: [{ translateX: tx }], paddingTop: safeTop, paddingLeft: safeLeft },
+          side === 'right' ? styles.panelRight : styles.panelLeft,
+          {
+            width,
+            transform: [{ translateX: tx }],
+            paddingTop: safeTop,
+            paddingLeft: side === 'left' ? safeLeft : 0,
+          },
         ]}
       >
         {title ? (
@@ -55,13 +64,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
-    left: 0,
     backgroundColor: color.panelSolid,
-    borderRightWidth: 1,
     borderColor: color.border,
+    ...elevation.panel,
+  },
+  panelLeft: {
+    left: 0,
+    borderRightWidth: 1,
     borderTopRightRadius: radius.lg,
     borderBottomRightRadius: radius.lg,
-    ...elevation.panel,
+  },
+  panelRight: {
+    right: 0,
+    borderLeftWidth: 1,
+    borderTopLeftRadius: radius.lg,
+    borderBottomLeftRadius: radius.lg,
   },
   header: {
     flexDirection: 'row',
