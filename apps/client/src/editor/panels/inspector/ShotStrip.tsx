@@ -111,7 +111,12 @@ const styles = StyleSheet.create({
   thumbActive: { borderWidth: 2, borderColor: color.accent },
   thumbHit: { flex: 1 },
   thumbImg: { width: '100%', height: '100%' },
-  thumbPlaceholder: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: color.surfaceHi },
+  thumbPlaceholder: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: color.surfaceHi,
+  },
   thumbPlaceholderText: { fontSize: 16 },
   thumbRemove: {
     position: 'absolute',

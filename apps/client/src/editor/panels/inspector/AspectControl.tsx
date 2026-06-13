@@ -15,7 +15,13 @@ export function AspectControl({ compact }: { compact?: boolean }) {
       <Text style={styles.label}>{t('inspector.aspect')}</Text>
       <View style={styles.row}>
         {RATIO_IDS.map((id) => (
-          <Button key={id} label={id} compact={compact} active={id === aspectId} onPress={() => setAspect(id)} />
+          <Button
+            key={id}
+            label={id}
+            compact={compact}
+            active={id === aspectId}
+            onPress={() => setAspect(id)}
+          />
         ))}
       </View>
     </View>

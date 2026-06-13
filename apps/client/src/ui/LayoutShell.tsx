@@ -152,7 +152,12 @@ function TabletChrome() {
       </Drawer>
 
       {/* 右侧检视抽屉(相机 + 选中) */}
-      <Drawer open={inspectorOpen} onClose={() => setInspector(false)} title={t('inspector.title')} side="right">
+      <Drawer
+        open={inspectorOpen}
+        onClose={() => setInspector(false)}
+        title={t('inspector.title')}
+        side="right"
+      >
         <ScrollView contentContainerStyle={styles.drawerBody}>
           <InspectorContent compact />
         </ScrollView>
@@ -187,8 +192,18 @@ function PhoneChrome() {
       {/* 底部 Tab 栏:添加 / 相机(检视) / 分镜 / 出图(放大预览点缩略图;姿势在相机弹层) */}
       <View style={[styles.tabBar, { paddingBottom: safeBottom }]} pointerEvents="auto">
         <Tab icon="➕" label={t('nav.add')} active={activeSheet === 'add'} onPress={() => open('add')} />
-        <Tab icon="📷" label={t('inspector.camera')} active={activeSheet === 'camera'} onPress={() => open('camera')} />
-        <Tab icon="🎬" label={t('shot.label')} active={activeSheet === 'shots'} onPress={() => open('shots')} />
+        <Tab
+          icon="📷"
+          label={t('inspector.camera')}
+          active={activeSheet === 'camera'}
+          onPress={() => open('camera')}
+        />
+        <Tab
+          icon="🎬"
+          label={t('shot.label')}
+          active={activeSheet === 'shots'}
+          onPress={() => open('shots')}
+        />
         <Tab
           icon="✨"
           label={t('nav.generate')}

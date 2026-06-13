@@ -73,9 +73,21 @@ export const useUI = create<UIState>((set) => ({
   // 仅在高度真正变化时写入,避免 onLayout 反复触发无谓重渲染。
   setBottomBarH: (h) => set((s) => (s.bottomBarH === h ? s : { bottomBarH: h })),
   openGenerate: () =>
-    set({ generateOpen: true, settingsOpen: false, activeSheet: null, previewExpanded: false, inspectorOpen: false }),
+    set({
+      generateOpen: true,
+      settingsOpen: false,
+      activeSheet: null,
+      previewExpanded: false,
+      inspectorOpen: false,
+    }),
   closeGenerate: () => set({ generateOpen: false }),
   openSettings: () =>
-    set({ settingsOpen: true, generateOpen: false, activeSheet: null, previewExpanded: false, inspectorOpen: false }),
+    set({
+      settingsOpen: true,
+      generateOpen: false,
+      activeSheet: null,
+      previewExpanded: false,
+      inspectorOpen: false,
+    }),
   closeSettings: () => set({ settingsOpen: false }),
 }));

@@ -137,11 +137,7 @@ export function SettingsDock() {
           <Pressable
             key={sec.id}
             onPress={() => setActive(sec.id)}
-            style={({ pressed }) => [
-              styles.navItem,
-              on && styles.navItemActive,
-              pressed && styles.pressed,
-            ]}
+            style={({ pressed }) => [styles.navItem, on && styles.navItemActive, pressed && styles.pressed]}
           >
             <Text style={styles.navIcon}>{sec.icon}</Text>
             <Text style={[styles.navLabel, on && styles.navLabelActive]} numberOfLines={1}>
@@ -170,9 +166,7 @@ export function SettingsDock() {
                 style={styles.input}
               />
               <Pressable onPress={() => setShowKey((v) => !v)} hitSlop={6} style={styles.keyToggle}>
-                <Text style={styles.keyToggleText}>
-                  {showKey ? t('settings.hide') : t('settings.show')}
-                </Text>
+                <Text style={styles.keyToggleText}>{showKey ? t('settings.hide') : t('settings.show')}</Text>
               </Pressable>
             </View>
             <View style={styles.verifyRow}>
@@ -285,10 +279,7 @@ export function SettingsDock() {
     <View style={[StyleSheet.absoluteFill, styles.layer]} pointerEvents="box-none">
       <Backdrop onPress={close} />
       <View style={styles.center} pointerEvents="box-none">
-        <View
-          style={[styles.card, isCompact ? styles.cardCompact : styles.cardWide]}
-          pointerEvents="auto"
-        >
+        <View style={[styles.card, isCompact ? styles.cardCompact : styles.cardWide]} pointerEvents="auto">
           {isCompact ? (
             <>
               <View style={styles.compactHeader}>
@@ -445,7 +436,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   dropdownScroll: { maxHeight: 220 },
-  dropdownItem: { paddingHorizontal: space.md, paddingVertical: space.sm, minHeight: 38, justifyContent: 'center' },
+  dropdownItem: {
+    paddingHorizontal: space.md,
+    paddingVertical: space.sm,
+    minHeight: 38,
+    justifyContent: 'center',
+  },
   dropdownItemActive: { backgroundColor: color.accentDim },
   dropdownItemText: { color: color.text, fontSize: font.body },
   dropdownItemTextActive: { color: color.accent, fontWeight: font.weightBtn },

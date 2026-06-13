@@ -17,7 +17,14 @@ export interface DrawerProps {
  * 侧边滑入抽屉(iPad 竖屏:左=资产库、右=检视面板)。
  * 常挂载、用 translateX/opacity 动画进出;关闭时 pointerEvents=none → 不挡画布。
  */
-export function Drawer({ open, onClose, title, width = layout.drawerW, side = 'left', children }: DrawerProps) {
+export function Drawer({
+  open,
+  onClose,
+  title,
+  width = layout.drawerW,
+  side = 'left',
+  children,
+}: DrawerProps) {
   const hidden = side === 'right' ? width : -width;
   const tx = useRef(new Animated.Value(open ? 0 : hidden)).current;
   const fade = useRef(new Animated.Value(open ? 1 : 0)).current;
