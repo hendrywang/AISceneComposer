@@ -2,6 +2,10 @@
 
 English | [简体中文](./README.zh-CN.md)
 
+[![CI](https://github.com/hendrywang/AISceneComposer/actions/workflows/ci.yml/badge.svg)](https://github.com/hendrywang/AISceneComposer/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![Node](https://img.shields.io/badge/node-20.x-339933?logo=node.js&logoColor=white)](./.nvmrc)
+
 AI Scene Composer is a lightweight 3D blocking tool for AI image generation.
 
 It solves a practical problem: when you generate images with text prompts alone, character positions, camera angle,
@@ -18,6 +22,8 @@ The core workflow is simple:
 
 > Status: alpha. The web editor, local scene save/load, model import, and resource library workflow are usable. Cloud
 > persistence and production-grade generation are still in progress.
+
+![AI Scene Composer editor: colored proxy actors blocked on a 3D stage, framed by a group-shot camera, with the asset library and scene presets on the left, transform and camera tools, and a live framed preview](./docs/assets/readme/editor.png)
 
 ## Why This Exists
 
@@ -191,4 +197,5 @@ Please report suspected vulnerabilities privately. See [SECURITY.md](./SECURITY.
 - [Phase 1 tasks](./docs/phase-1-tasks.md)
 - [Asset library](./docs/asset-library.md)
 - [Firebase architecture](./docs/firebase-architecture.md)
+- [Deployment](./docs/deployment.md)
 - [Open-source release guide](./docs/open-source-release.md)

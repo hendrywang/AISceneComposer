@@ -2,6 +2,10 @@
 
 [English](./README.md) | 简体中文
 
+[![CI](https://github.com/hendrywang/AISceneComposer/actions/workflows/ci.yml/badge.svg)](https://github.com/hendrywang/AISceneComposer/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![Node](https://img.shields.io/badge/node-20.x-339933?logo=node.js&logoColor=white)](./.nvmrc)
+
 AI Scene Composer 是一个面向 AI 图片生成的轻量 3D「虚拟布景 / 分镜构图」工具。
 
 它要解决的核心问题很具体：只用文字 prompt 生成图片时，角色位置、人物姿态、镜头角度、场景里细微的空间结构经常不可控。这个项目的思路是先用简单 3D 模型把参考图搭出来，再把这张参考图交给图像生成模型，让最终成片尽量保留你真正想要的构图关系。
@@ -14,6 +18,8 @@ AI Scene Composer 是一个面向 AI 图片生成的轻量 3D「虚拟布景 / �
 4. 把参考图交给 Google Gemini / Nano Banana 这类支持图像参考的生成模型。
 
 > 当前状态：alpha。Web 编辑器、本地场景保存/读取、模型导入、资源库贡献流程已经可用；云端持久化和生产级生成链路还在建设中。
+
+![AI Scene Composer 编辑器：网格舞台上摆放红蓝绿黄四个彩色代理角色，由合影机位取景，左侧是资源库与场景预设，配合变换工具、镜头预设与实时取景预览窗](./docs/assets/readme/editor.png)
 
 ## 为什么需要这个项目
 
@@ -181,4 +187,5 @@ API 服务（Node / TypeScript，Cloud Run 风格）
 - [阶段 1 任务](./docs/phase-1-tasks.md)
 - [资源库说明](./docs/asset-library.md)
 - [Firebase 架构](./docs/firebase-architecture.md)
+- [部署指南](./docs/deployment.md)
 - [开源发布指南](./docs/open-source-release.md)
