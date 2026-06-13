@@ -1,0 +1,29 @@
+{
+  "id": "palace-stairs",
+  "name": "宫殿台阶",
+  "type": "prop",
+  "category": "室外",
+  "tags": ["古风"],
+  "footprint": [4.0, 3.0],
+  "height": 1.05,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [4.0, 0.35, 3.0],
+        "pos": [0, 0.175, 0.0],
+        "color": "#b9b2a4"
+      },
+      {
+        "size": [3.4, 0.35, 2.2],
+        "pos": [0, 0.525, -0.4],
+        "color": "#a8a294"
+      },
+      {
+        "size": [2.8, 0.35, 1.4],
+        "pos": [0, 0.875, -0.8],
+        "color": "#b9b2a4"
+      }
+    ]
+  }
+}

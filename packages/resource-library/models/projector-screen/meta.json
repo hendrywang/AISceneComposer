@@ -1,0 +1,30 @@
+{
+  "id": "projector-screen",
+  "name": "投影幕",
+  "type": "prop",
+  "category": "装饰",
+  "footprint": [2.2, 0.06],
+  "height": 1.4,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "flat": true,
+        "size": [2.2, 1.4, 0],
+        "pos": [0, 1.7, 0],
+        "color": "#fbfbf7"
+      },
+      {
+        "flat": true,
+        "size": [2.18, 0.04, 0],
+        "pos": [0, 1.02, 0.01],
+        "color": "#1d1f24"
+      },
+      {
+        "size": [2.3, 0.12, 0.12],
+        "pos": [0, 2.46, 0],
+        "color": "#4a4f57"
+      }
+    ]
+  }
+}

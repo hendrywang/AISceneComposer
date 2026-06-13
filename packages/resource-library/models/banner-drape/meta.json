@@ -1,0 +1,32 @@
+{
+  "id": "banner-drape",
+  "name": "旗幔",
+  "type": "prop",
+  "category": "装饰",
+  "tags": ["古风"],
+  "footprint": [0.8, 0.1],
+  "height": 2.4,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "flat": true,
+        "size": [0.8, 2.4, 0],
+        "pos": [0, 1.2, 0],
+        "color": "#7a1f1f"
+      },
+      {
+        "flat": true,
+        "size": [0.62, 0.12, 0],
+        "pos": [0, 2.28, 0.01],
+        "color": "#c8a24a"
+      },
+      {
+        "flat": true,
+        "size": [0.62, 0.12, 0],
+        "pos": [0, 0.12, 0.01],
+        "color": "#c8a24a"
+      }
+    ]
+  }
+}

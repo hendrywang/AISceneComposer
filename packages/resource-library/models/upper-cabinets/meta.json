@@ -1,0 +1,43 @@
+{
+  "id": "upper-cabinets",
+  "name": "吊柜",
+  "type": "prop",
+  "category": "装饰",
+  "footprint": [1.6, 0.1],
+  "height": 0.7,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "flat": true,
+        "size": [1.6, 0.7, 0],
+        "pos": [0, 1.8, 0],
+        "color": "#d9d4c8"
+      },
+      {
+        "flat": true,
+        "size": [0.76, 0.64, 0],
+        "pos": [-0.41, 1.8, 0.01],
+        "color": "#cbc6ba"
+      },
+      {
+        "flat": true,
+        "size": [0.76, 0.64, 0],
+        "pos": [0.41, 1.8, 0.01],
+        "color": "#cbc6ba"
+      },
+      {
+        "flat": true,
+        "size": [0.5, 0.03, 0],
+        "pos": [-0.41, 1.52, 0.02],
+        "color": "#9aa0a6"
+      },
+      {
+        "flat": true,
+        "size": [0.5, 0.03, 0],
+        "pos": [0.41, 1.52, 0.02],
+        "color": "#9aa0a6"
+      }
+    ]
+  }
+}

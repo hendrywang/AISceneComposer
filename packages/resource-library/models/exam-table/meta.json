@@ -1,0 +1,33 @@
+{
+  "id": "exam-table",
+  "name": "诊查床",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [0.7, 1.9],
+  "height": 0.7,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [0.6, 0.55, 1.7],
+        "pos": [0, 0.275, 0],
+        "color": "#e3e7ea"
+      },
+      {
+        "size": [0.7, 0.16, 1.9],
+        "pos": [0, 0.62, 0],
+        "color": "#6f93b0"
+      },
+      {
+        "size": [0.66, 0.04, 1.86],
+        "pos": [0, 0.71, 0],
+        "color": "#83a6c2"
+      },
+      {
+        "size": [0.62, 0.06, 0.4],
+        "pos": [0, 0.5, -0.75],
+        "color": "#cfd4d8"
+      }
+    ]
+  }
+}

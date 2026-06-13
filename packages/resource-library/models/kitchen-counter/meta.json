@@ -1,0 +1,33 @@
+{
+  "id": "kitchen-counter",
+  "name": "灶台柜",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [1.6, 0.6],
+  "height": 0.9,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [1.6, 0.82, 0.6],
+        "pos": [0, 0.41, 0],
+        "color": "#d9d4c8"
+      },
+      {
+        "size": [1.66, 0.06, 0.64],
+        "pos": [0, 0.87, 0],
+        "color": "#8a8378"
+      },
+      {
+        "size": [0.74, 0.74, 0.02],
+        "pos": [-0.4, 0.42, 0.31],
+        "color": "#cbc6ba"
+      },
+      {
+        "size": [0.74, 0.74, 0.02],
+        "pos": [0.4, 0.42, 0.31],
+        "color": "#cbc6ba"
+      }
+    ]
+  }
+}

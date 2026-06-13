@@ -1,0 +1,18 @@
+{
+  "id": "guard",
+  "name": "卫士",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.9,
+      "build": 1.2,
+      "shoulder": 1.25,
+      "hip": 1,
+      "head": 0.98,
+      "hair": "#1c1c1c",
+      "hairStyle": "short"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "conference-table",
+  "name": "会议桌",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [2.8, 1.2],
+  "height": 0.75,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [2.8, 0.08, 1.2],
+        "pos": [0, 0.71, 0],
+        "color": "#6e5a40"
+      },
+      {
+        "size": [0.12, 0.67, 0.9],
+        "pos": [-1.1, 0.335, 0],
+        "color": "#5a4933"
+      },
+      {
+        "size": [0.12, 0.67, 0.9],
+        "pos": [1.1, 0.335, 0],
+        "color": "#5a4933"
+      },
+      {
+        "size": [1.9, 0.1, 0.12],
+        "pos": [0, 0.2, 0],
+        "color": "#4a3c2a"
+      }
+    ]
+  }
+}

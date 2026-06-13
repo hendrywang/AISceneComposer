@@ -1,0 +1,29 @@
+{
+  "id": "dais",
+  "name": "高台",
+  "type": "prop",
+  "category": "家具",
+  "tags": ["古风"],
+  "footprint": [3.0, 2.2],
+  "height": 0.5,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [3.0, 0.18, 2.2],
+        "pos": [0, 0.09, 0],
+        "color": "#b9b2a4"
+      },
+      {
+        "size": [2.5, 0.16, 1.8],
+        "pos": [0, 0.26, 0],
+        "color": "#9c3b2e"
+      },
+      {
+        "size": [2.0, 0.16, 1.4],
+        "pos": [0, 0.42, 0],
+        "color": "#b9b2a4"
+      }
+    ]
+  }
+}

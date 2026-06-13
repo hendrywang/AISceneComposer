@@ -1,0 +1,19 @@
+{
+  "id": "woman-tall",
+  "name": "高个女",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.78,
+      "build": 0.92,
+      "shoulder": 0.95,
+      "hip": 1.02,
+      "head": 1,
+      "hair": "#3a2a1c",
+      "hairStyle": "long",
+      "bust": 0.55
+    }
+  }
+}

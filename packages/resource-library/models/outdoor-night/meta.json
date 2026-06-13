@@ -1,0 +1,14 @@
+{
+  "id": "outdoor-night",
+  "name": "夜晚街区",
+  "type": "environment",
+  "category": "室外",
+  "footprint": [20, 20],
+  "height": 6,
+  "source": {
+    "kind": "outdoorShell",
+    "ground": "paving",
+    "sky": "night",
+    "backdrop": "cityline"
+  }
+}

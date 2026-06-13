@@ -1,0 +1,14 @@
+{
+  "id": "outdoor-grass",
+  "name": "草地",
+  "type": "environment",
+  "category": "室外",
+  "footprint": [20, 20],
+  "height": 6,
+  "source": {
+    "kind": "outdoorShell",
+    "ground": "grass",
+    "sky": "day",
+    "backdrop": "treeline"
+  }
+}

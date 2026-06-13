@@ -1,0 +1,28 @@
+{
+  "id": "cafe-table",
+  "name": "咖啡桌",
+  "type": "prop",
+  "category": "家具",
+  "footprint": [0.7, 0.7],
+  "height": 0.74,
+  "source": {
+    "kind": "primitive",
+    "parts": [
+      {
+        "size": [0.68, 0.05, 0.68],
+        "pos": [0, 0.715, 0],
+        "color": "#c9b79b"
+      },
+      {
+        "size": [0.09, 0.66, 0.09],
+        "pos": [0, 0.36, 0],
+        "color": "#5a5550"
+      },
+      {
+        "size": [0.4, 0.04, 0.4],
+        "pos": [0, 0.02, 0],
+        "color": "#46423d"
+      }
+    ]
+  }
+}

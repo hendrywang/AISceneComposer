@@ -1,0 +1,18 @@
+{
+  "id": "elder",
+  "name": "长者",
+  "type": "actor",
+  "category": "人物",
+  "source": {
+    "kind": "human",
+    "body": {
+      "height": 1.62,
+      "build": 1.1,
+      "shoulder": 0.95,
+      "hip": 1.05,
+      "head": 1,
+      "hair": "#cfcfcf",
+      "hairStyle": "short"
+    }
+  }
+}
