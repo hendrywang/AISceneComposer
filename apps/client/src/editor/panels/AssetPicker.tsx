@@ -54,6 +54,12 @@ const CATEGORY_GLYPH: Record<string, string> = {
   场景: '🏠',
   我的模型: '📦',
 };
+/** 预设场景图标(emoji)。 */
+const SCENE_GLYPH: Record<string, string> = {
+  bedroom: '🛏️',
+  living: '🛋️',
+  classroom: '🏫',
+};
 /** 类目中文名 → i18n 键(数据里 category 仍是中文,显示在 UI 层本地化)。 */
 const CATEGORY_KEY: Record<string, string> = {
   人物: 'people',
@@ -64,13 +70,23 @@ const CATEGORY_KEY: Record<string, string> = {
 };
 const glyphFor = (d: ModelDef) => GLYPH[d.id] ?? CATEGORY_GLYPH[d.category] ?? '⬜';
 
-function AssetCard({ d, width, onAdd }: { d: ModelDef; width: number; onAdd: () => void }) {
-  const { t } = useTranslation();
+/** 网格卡片(emoji + 文字):资产、空房间、预设场景共用同一样式。 */
+function Tile({
+  glyph,
+  label,
+  width,
+  onPress,
+}: {
+  glyph: string;
+  label: string;
+  width: number;
+  onPress: () => void;
+}) {
   return (
-    <Pressable onPress={onAdd} style={({ pressed }) => [styles.card, { width }, pressed && styles.pressed]}>
-      <Text style={styles.glyph}>{glyphFor(d)}</Text>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.card, { width }, pressed && styles.pressed]}>
+      <Text style={styles.glyph}>{glyph}</Text>
       <Text style={styles.cardLabel} numberOfLines={1}>
-        {t(`model.${d.id}`, { defaultValue: d.name })}
+        {label}
       </Text>
     </Pressable>
   );
@@ -102,7 +118,9 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
     // 移动端(抽屉 / 底部弹层)固定一排 4 个;桌面左栏按宽度自适应。
     const auto = Math.max(2, Math.floor((width + gap) / (minCard + gap))) || 2;
     const c = isDesktop ? auto : 4;
-    return { cardW: width > 0 ? (width - gap * (c - 1)) / c : minCard };
+    // 向下取整:c 张卡 + 间距精确等于容器宽时,高 DPI(安卓)逐卡进位会溢出,把末张挤到下一行
+    // → 每行少 1 个(4 变 3)。取整留出零点几 px 余量,稳定排满 c 张。
+    return { cardW: width > 0 ? Math.floor((width - gap * (c - 1)) / c) : minCard };
   }, [width, isDesktop]);
 
   const catalogItems = useMemo(() => CATALOG.filter((d) => d.category === activeCat), [activeCat]);
@@ -119,7 +137,13 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
   const renderGrid = (list: ModelDef[]) => (
     <View style={styles.grid}>
       {list.map((d) => (
-        <AssetCard key={d.id} d={d} width={cardW} onAdd={() => addItem(d.id)} />
+        <Tile
+          key={d.id}
+          glyph={glyphFor(d)}
+          label={t(`model.${d.id}`, { defaultValue: d.name })}
+          width={cardW}
+          onPress={() => addItem(d.id)}
+        />
       ))}
     </View>
   );
@@ -160,11 +184,13 @@ export function AssetPicker({ onItemAdded }: { onItemAdded?: () => void }) {
       ) : activeCat === SCENE ? (
         <View style={styles.wrap}>
           <Text style={styles.section}>{t('asset.presetScenes')}</Text>
-          <View style={styles.chipRow}>
+          <View style={styles.grid}>
             {SCENES.map((sc) => (
-              <Chip
+              <Tile
                 key={sc.id}
+                glyph={SCENE_GLYPH[sc.id] ?? '🏠'}
                 label={t(`scene.${sc.id}`, { defaultValue: sc.name })}
+                width={cardW}
                 onPress={() => {
                   loadScene(sc.id);
                   onItemAdded?.();
