@@ -17,7 +17,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "node --import tsx --test apps/client/src/editor/camera.test.ts apps/client/src/store/editorStore.test.ts packages/resource-library/src/catalog.test.ts services/api/src/routes/generate.test.ts services/api/src/middleware/auth.test.ts",
+    "test": "node --import tsx --test apps/client/src/store/editorStore.test.ts packages/resource-library/src/catalog.test.ts services/api/src/routes/generate.test.ts services/api/src/middleware/auth.test.ts",
     "check": "pnpm gen && pnpm format:check && pnpm lint && pnpm exec turbo run typecheck --force && pnpm test && pnpm --filter @asc/resource-library check && pnpm build",
     "ci": "pnpm check",
     "web": "pnpm gen && pnpm --filter @asc/client web",

@@ -30,7 +30,8 @@ function resetStore() {
     objects: [],
     selectedId: null,
     transformMode: 'translate',
-    cameras: [],
+    shots: [],
+    activeShotId: null,
     cameraCmd: null,
     bgImageUrl: null,
     bgAspect: null,
@@ -44,7 +45,7 @@ test('loadSnapshot restores embedded user models and recomputes dimensions', () 
   const snapshot: SceneSnapshot = {
     version: 1,
     objects: [original, { ...original, id: 'missing', modelId: 'missing-model' }],
-    cameras: [],
+    shots: [],
     bgImageUrl: null,
     bgAspect: null,
     userModels: [userModel],

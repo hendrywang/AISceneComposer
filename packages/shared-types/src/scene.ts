@@ -6,9 +6,6 @@
 
 export type Vec3 = [number, number, number];
 
-/** 电影镜头预设:基于选中角色实时计算机位(不存死坐标) */
-export type CameraPreset = 'ots' | 'two-shot' | 'group' | 'low' | 'high' | 'dutch' | 'closeup';
-
 export interface Actor {
   id: string;
   assetId: string;
@@ -31,15 +28,18 @@ export interface Prop {
   scale: number;
 }
 
-export interface Camera {
+export interface Shot {
   id: string;
-  /** 如「过肩-1」「仰拍」 */
+  /** 如「正面」「侧面」 */
   name: string;
   position: Vec3;
   /** look-at 点 */
   target: Vec3;
   fov: number;
-  preset?: CameraPreset;
+  /** 画幅比例 id(RATIOS,如 '16:9'),还原构图用 */
+  aspect: string;
+  /** 取景缩略图(PNG dataURL);分镜条展示用,旧档/未截图为 null */
+  thumbnail: string | null;
 }
 
 export interface Scene {
@@ -51,9 +51,9 @@ export interface Scene {
   environment: { assetId: string };
   actors: Actor[];
   props: Prop[];
-  /** 一个场景存多个机位(D16) */
-  cameras: Camera[];
-  activeCameraId: string;
+  /** 一个场景存多个分镜(D16) */
+  shots: Shot[];
+  activeShotId: string;
   createdAt: number;
   updatedAt: number;
 }

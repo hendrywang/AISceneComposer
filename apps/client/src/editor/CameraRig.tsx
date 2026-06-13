@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { useEditor } from '../store/editorStore';
-import { computePreset, type CamPose } from './camera';
 
 type OrbitLike = { target: THREE.Vector3; update: () => void };
+type CamPose = { position: [number, number, number]; target: [number, number, number]; fov: number };
 
 /** Canvas 内的相机执行器:消费 store.cameraCmd,操作相机 + OrbitControls */
 export default function CameraRig() {
@@ -14,9 +14,6 @@ export default function CameraRig() {
 
   const cmd = useEditor((s) => s.cameraCmd);
   const clear = useEditor((s) => s.clearCameraCmd);
-  const addCamera = useEditor((s) => s.addCamera);
-  const objects = useEditor((s) => s.objects);
-  const selectedId = useEditor((s) => s.selectedId);
 
   useEffect(() => {
     if (!cmd || !controls) return;
@@ -34,11 +31,6 @@ export default function CameraRig() {
       case 'apply':
         apply({ position: cmd.view.position, target: cmd.view.target, fov: cmd.view.fov });
         break;
-      case 'preset': {
-        const p = computePreset(cmd.preset, objects, selectedId, camera.position, controls.target);
-        if (p) apply(p);
-        break;
-      }
       case 'fov':
         camera.fov = cmd.value;
         camera.updateProjectionMatrix();
@@ -47,14 +39,6 @@ export default function CameraRig() {
       case 'reset':
         // 复位到默认视角(与 Editor.tsx Canvas 初始相机一致)。
         apply({ position: [5, 4, 6], target: [0, 0, 0], fov: 55 });
-        break;
-      case 'save':
-        addCamera({
-          name: cmd.name,
-          position: [camera.position.x, camera.position.y, camera.position.z],
-          target: [controls.target.x, controls.target.y, controls.target.z],
-          fov: camera.fov,
-        });
         break;
     }
     clear();

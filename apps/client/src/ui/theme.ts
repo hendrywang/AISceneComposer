@@ -76,6 +76,7 @@ export const layout = {
   drawerW: 300, // iPad 竖屏左抽屉
   tabBarH: 60, // 手机底部 Tab 高
   toolbarH: 52, // 顶部工具条高
+  gizmoGutter: 140, // 底部工具条右边界对齐右下角坐标系(gizmo,桌面 margin 72 + 尺寸)左侧的留白
 } as const;
 
 export const theme = { color, space, radius, font, touch, elevation, z, bp, layout };

@@ -1,7 +1,9 @@
 import { create } from 'zustand';
-import type { Vec3, Camera, CameraPreset, RenderStyle } from '@asc/shared-types';
+import type { Vec3, Shot, RenderStyle } from '@asc/shared-types';
 import { getDef, modelDims, SCENES, type ModelDef } from '@asc/resource-library';
 import { generateFromPreview } from '../editor/generate';
+import { previewControl, cameraSync } from '../editor/cameraSync';
+import { useSettings } from './settingsStore';
 import i18n from '../i18n';
 
 export type TransformMode = 'translate' | 'rotate';
@@ -28,7 +30,9 @@ export interface EditorObject {
 export interface SceneSnapshot {
   version: 1;
   objects: EditorObject[];
-  cameras: Camera[];
+  shots: Shot[];
+  /** @deprecated 旧档写的是 cameras;loadSnapshot 读取时回退 */
+  cameras?: Shot[];
   bgImageUrl: string | null;
   bgAspect: number | null;
   /** 场景里用到的运行时上传模型(gltf,file 为内嵌 data URL)→ 存档自包含、可分享 */
@@ -37,9 +41,7 @@ export interface SceneSnapshot {
 }
 
 export type CameraCmd =
-  | { type: 'save'; name: string }
-  | { type: 'apply'; view: Camera }
-  | { type: 'preset'; preset: CameraPreset }
+  | { type: 'apply'; view: Shot }
   | { type: 'fov'; value: number }
   | { type: 'reset' }
   | null;
@@ -48,10 +50,16 @@ interface EditorState {
   objects: EditorObject[];
   selectedId: string | null;
   transformMode: TransformMode;
-  cameras: Camera[];
+  shots: Shot[];
+  /** 当前选中分镜(分镜条高亮) */
+  activeShotId: string | null;
   cameraCmd: CameraCmd;
   bgImageUrl: string | null;
   bgAspect: number | null;
+  /** 当前画幅比例 id(RATIOS,如 '16:9');从 PreviewDock 上提,分镜可存/还原 */
+  aspectId: string;
+  /** 当前镜头焦距(竖直 FOV 度);镜头按钮据此高亮 */
+  fov: number;
   /** 运行时上传的模型(gltf data URL),与静态 CATALOG 并存、可放进场景、随存档保存 */
   userModels: ModelDef[];
 
@@ -76,12 +84,12 @@ interface EditorState {
   setMode: (m: TransformMode) => void;
   setPose: (id: string, poseId: string) => void;
 
-  runPreset: (preset: CameraPreset) => void;
   setFov: (value: number) => void;
-  requestSaveCamera: () => void;
-  applyCamera: (view: Camera) => void;
-  removeCamera: (id: string) => void;
-  addCamera: (c: Omit<Camera, 'id'>) => void;
+  setAspect: (id: string) => void;
+  /** 把当前取景(机位+画幅+缩略图)存成一格分镜 */
+  captureShot: () => void;
+  applyShot: (shot: Shot) => void;
+  removeShot: (id: string) => void;
   clearCameraCmd: () => void;
   setBg: (url: string | null, aspect: number | null) => void;
 
@@ -102,6 +110,9 @@ let counter = 0;
 const uid = () => `o${(counter++).toString(36)}${Math.floor(Math.random() * 1e4).toString(36)}`;
 
 const spread = (i: number): number[] => [((i % 4) - 1.5) * 1.2, 0, Math.floor(i / 4) * 1.2];
+
+/** 分镜缩略图长边(px) */
+const THUMB_EDGE = 192;
 
 function makeObject(
   def: ModelDef,
@@ -128,10 +139,13 @@ export const useEditor = create<EditorState>((set, get) => ({
   objects: [],
   selectedId: null,
   transformMode: 'translate',
-  cameras: [],
+  shots: [],
+  activeShotId: null,
   cameraCmd: null,
   bgImageUrl: null,
   bgAspect: null,
+  aspectId: useSettings.getState().defaultAspect,
+  fov: 55,
   userModels: [],
   prompt: '',
   style: 'realistic',
@@ -209,10 +223,16 @@ export const useEditor = create<EditorState>((set, get) => ({
           };
         })
         .filter((o): o is EditorObject => o !== null);
+      const shots = (snap.shots ?? snap.cameras ?? []).map((sh) => ({
+        ...sh,
+        aspect: sh.aspect ?? '16:9',
+        thumbnail: sh.thumbnail ?? null,
+      }));
       return {
         objects,
         userModels,
-        cameras: snap.cameras ?? [],
+        shots,
+        activeShotId: null,
         bgImageUrl: snap.bgImageUrl ?? null,
         bgAspect: snap.bgAspect ?? null,
         selectedId: null,
@@ -224,9 +244,11 @@ export const useEditor = create<EditorState>((set, get) => ({
     set({
       objects: [],
       selectedId: null,
-      cameras: [],
+      shots: [],
+      activeShotId: null,
       bgImageUrl: null,
       bgAspect: null,
+      fov: 55,
       cameraCmd: { type: 'reset' },
     }),
   select: (id) => set({ selectedId: id }),
@@ -265,15 +287,37 @@ export const useEditor = create<EditorState>((set, get) => ({
       objects: s.objects.map((o) => (o.id === id ? { ...o, poseId } : o)),
     })),
 
-  runPreset: (preset) => set({ cameraCmd: { type: 'preset', preset } }),
-  setFov: (value) => set({ cameraCmd: { type: 'fov', value } }),
-  requestSaveCamera: () =>
+  setFov: (value) => set({ cameraCmd: { type: 'fov', value }, fov: value }),
+  setAspect: (id) => set({ aspectId: id }),
+  captureShot: () => {
+    // 缩略图来自预览 Canvas(渲染副作用),先取出再进 set;机位读实时同源的 cameraSync。
+    const thumbnail = previewControl.capture?.(THUMB_EDGE) ?? null;
+    const { position: p, target: t, fov } = cameraSync;
+    set((s) => {
+      const shot: Shot = {
+        id: uid(),
+        name: i18n.t('shot.name', { n: s.shots.length + 1 }),
+        position: [p.x, p.y, p.z],
+        target: [t.x, t.y, t.z],
+        fov,
+        aspect: s.aspectId,
+        thumbnail,
+      };
+      return { shots: [...s.shots, shot], activeShotId: shot.id };
+    });
+  },
+  applyShot: (shot) =>
+    set({
+      cameraCmd: { type: 'apply', view: shot },
+      aspectId: shot.aspect,
+      activeShotId: shot.id,
+      fov: shot.fov,
+    }),
+  removeShot: (id) =>
     set((s) => ({
-      cameraCmd: { type: 'save', name: i18n.t('camera.savedName', { n: s.cameras.length + 1 }) },
+      shots: s.shots.filter((sh) => sh.id !== id),
+      activeShotId: s.activeShotId === id ? null : s.activeShotId,
     })),
-  applyCamera: (view) => set({ cameraCmd: { type: 'apply', view } }),
-  removeCamera: (id) => set((s) => ({ cameras: s.cameras.filter((c) => c.id !== id) })),
-  addCamera: (c) => set((s) => ({ cameras: [...s.cameras, { ...c, id: uid() }] })),
   clearCameraCmd: () => set({ cameraCmd: null }),
   setBg: (url, aspect) => set({ bgImageUrl: url, bgAspect: aspect }),
 

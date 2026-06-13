@@ -9,7 +9,7 @@ export interface ChipProps {
   onRemove?: () => void;
 }
 
-/** 紧凑标签按钮(场景预设 / 已存机位 / 分类 Tab)。 */
+/** 紧凑标签按钮(分类 Tab)。 */
 export function Chip({ label, onPress, active, onRemove }: ChipProps) {
   return (
     <View style={[styles.wrap, active && styles.wrapActive]}>

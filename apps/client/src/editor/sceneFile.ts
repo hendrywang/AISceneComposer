@@ -8,7 +8,7 @@ const isWeb = () => typeof document !== 'undefined';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** 保存当前场景为本地 JSON 文件(忠实快照:构图 + 机位 + 参考底图)。 */
+/** 保存当前场景为本地 JSON 文件(忠实快照:构图 + 分镜 + 参考底图)。 */
 export function saveSceneToFile() {
   if (!isWeb()) return;
   const s = useEditor.getState();
@@ -18,7 +18,7 @@ export function saveSceneToFile() {
   const snap: SceneSnapshot = {
     version: 1,
     objects: s.objects,
-    cameras: s.cameras,
+    shots: s.shots,
     bgImageUrl: s.bgImageUrl,
     bgAspect: s.bgAspect,
     userModels: s.userModels.filter((m) => usedIds.has(m.id)),
