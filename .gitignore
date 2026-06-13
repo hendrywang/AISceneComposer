@@ -27,3 +27,6 @@ npm-debug.log*
 
 # os
 .DS_Store
+
+# claude code local settings (personal permissions; skills/ stays shared)
+.claude/settings.local.json
