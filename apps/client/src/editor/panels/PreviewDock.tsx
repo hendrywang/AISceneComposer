@@ -199,8 +199,14 @@ export function PreviewDock() {
                   <IconBtn icon="✕" tip="清除底图" place="bottom" onPress={() => setBg(null, null)} />
                 ) : null}
               </View>
-              {/* 右下:下载 */}
+              {/* 右下:出图 + 下载 */}
               <View style={styles.cornerBR} pointerEvents="auto">
+                <IconBtn
+                  icon="✨"
+                  tip="用当前取景生成 AI 图像"
+                  place="top"
+                  onPress={() => useUI.getState().openGenerate()}
+                />
                 <IconBtn icon="⬇" tip="下载当前取景为 PNG(长边 1920)" place="top" onPress={download} />
               </View>
               {/* 覆盖层额外:左下 收起 */}
@@ -269,7 +275,14 @@ const styles = StyleSheet.create({
     gap: space.xs,
     zIndex: z.panel,
   },
-  cornerBR: { position: 'absolute', bottom: space.sm, right: space.sm, zIndex: z.panel },
+  cornerBR: {
+    position: 'absolute',
+    bottom: space.sm,
+    right: space.sm,
+    flexDirection: 'row',
+    gap: space.xs,
+    zIndex: z.panel,
+  },
   cornerBL: { position: 'absolute', bottom: space.sm, left: space.sm, zIndex: z.panel },
 
   iconBtn: {

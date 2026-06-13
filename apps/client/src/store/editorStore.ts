@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import type { Vec3, Camera, CameraPreset } from '@asc/shared-types';
+import type { Vec3, Camera, CameraPreset, RenderStyle } from '@asc/shared-types';
 import { getDef, modelDims, SCENES, type ModelDef } from '@asc/resource-library';
+import { generateFromPreview } from '../editor/generate';
 
 export type TransformMode = 'translate' | 'rotate';
 export type ObjectKind = 'actor' | 'prop' | 'environment';
@@ -52,6 +53,13 @@ interface EditorState {
   /** 运行时上传的模型(gltf data URL),与静态 CATALOG 并存、可放进场景、随存档保存 */
   userModels: ModelDef[];
 
+  // 出图(P0-A):提示词 + 画风 + 异步生成态(结果放 store,跨断点 chrome 重挂存活)
+  prompt: string;
+  style: RenderStyle;
+  genStatus: 'idle' | 'running' | 'done' | 'error';
+  genResultUrl: string | null;
+  genError: string | null;
+
   add: (modelId: string) => void;
   addUserModel: (def: ModelDef) => void;
   /** 把一个导入模型拆成多个部件对象;parts 带各自模型 + 相对原点的 (dx,dz) 模型空间偏移 */
@@ -74,6 +82,11 @@ interface EditorState {
   addCamera: (c: Omit<Camera, 'id'>) => void;
   clearCameraCmd: () => void;
   setBg: (url: string | null, aspect: number | null) => void;
+
+  setPrompt: (v: string) => void;
+  setStyle: (v: RenderStyle) => void;
+  generate: () => Promise<void>;
+  clearGen: () => void;
 }
 
 const ACTOR_COLORS = ['#e23b3b', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
@@ -109,7 +122,7 @@ function makeObject(
   };
 }
 
-export const useEditor = create<EditorState>((set) => ({
+export const useEditor = create<EditorState>((set, get) => ({
   objects: [],
   selectedId: null,
   transformMode: 'translate',
@@ -118,6 +131,11 @@ export const useEditor = create<EditorState>((set) => ({
   bgImageUrl: null,
   bgAspect: null,
   userModels: [],
+  prompt: '',
+  style: 'realistic',
+  genStatus: 'idle',
+  genResultUrl: null,
+  genError: null,
 
   add: (modelId) =>
     set((s) => {
@@ -245,4 +263,23 @@ export const useEditor = create<EditorState>((set) => ({
   addCamera: (c) => set((s) => ({ cameras: [...s.cameras, { ...c, id: uid() }] })),
   clearCameraCmd: () => set({ cameraCmd: null }),
   setBg: (url, aspect) => set({ bgImageUrl: url, bgAspect: aspect }),
+
+  setPrompt: (v) => set({ prompt: v }),
+  setStyle: (v) => set({ style: v }),
+  clearGen: () => set({ genStatus: 'idle', genResultUrl: null, genError: null }),
+  generate: async () => {
+    const { prompt, style, genStatus } = get();
+    if (genStatus === 'running') return; // 防重复提交
+    if (!prompt.trim()) {
+      set({ genStatus: 'error', genError: '请先输入提示词' });
+      return;
+    }
+    set({ genStatus: 'running', genError: null, genResultUrl: null });
+    try {
+      const url = await generateFromPreview({ prompt: prompt.trim(), style });
+      set({ genStatus: 'done', genResultUrl: url });
+    } catch (e) {
+      set({ genStatus: 'error', genError: (e as Error)?.message ?? '生成失败' });
+    }
+  },
 }));

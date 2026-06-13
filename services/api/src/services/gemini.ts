@@ -2,6 +2,8 @@ import type { RenderStyle } from '@asc/shared-types';
 
 export interface GenerateImageInput {
   blockingImage: Buffer;
+  /** 上传底图的真实 MIME 类型(由 multer 提供),透传给模型,避免类型错配 */
+  mimeType: string;
   prompt: string;
   style: RenderStyle;
 }
@@ -44,7 +46,7 @@ export async function generateImage(input: GenerateImageInput): Promise<Generate
           { text: fullPrompt },
           {
             inlineData: {
-              mimeType: 'image/webp',
+              mimeType: input.mimeType,
               data: input.blockingImage.toString('base64'),
             },
           },

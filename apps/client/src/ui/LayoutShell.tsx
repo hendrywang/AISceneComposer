@@ -12,6 +12,7 @@ import { TransformToolbar } from '../editor/panels/TransformToolbar';
 import { Inspector, useSelectedActor } from '../editor/panels/Inspector';
 import { CameraDeck } from '../editor/panels/CameraDeck';
 import { PreviewDock } from '../editor/panels/PreviewDock';
+import { GenerateDock } from '../editor/panels/GenerateDock';
 import { SelectionHud } from '../editor/panels/SelectionHud';
 
 /**
@@ -28,6 +29,7 @@ export function LayoutShell() {
       {device === 'phone' && <PhoneChrome />}
       <SelectionHud />
       <PreviewDock />
+      <GenerateDock />
     </View>
   );
 }

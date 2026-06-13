@@ -9,31 +9,52 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-export const generateRouter = Router();
+export interface GenerateDeps {
+  generateImage: typeof generateImage;
+}
 
 /**
- * POST /api/generate
+ * 构造 /api/generate 路由。
+ * 工厂形态:默认注入真实 generateImage;测试可注入桩,避免真打 Gemini。
+ *
+ * POST /
  * multipart/form-data:blockingImage(文件)+ prompt + style
  */
-generateRouter.post('/', verifyAuth, upload.single('blockingImage'), async (req, res) => {
-  try {
-    const prompt = String(req.body.prompt ?? '');
-    const style = (req.body.style as RenderStyle) ?? 'realistic';
-    const blockingImage = req.file?.buffer;
+export function makeGenerateRouter(deps: GenerateDeps = { generateImage }): Router {
+  const router = Router();
 
-    if (!blockingImage) return res.status(400).json({ error: 'blockingImage (file) is required' });
-    if (!prompt) return res.status(400).json({ error: 'prompt is required' });
+  router.post('/', verifyAuth, upload.single('blockingImage'), async (req, res) => {
+    try {
+      const prompt = String(req.body.prompt ?? '');
+      const style = (req.body.style as RenderStyle) ?? 'realistic';
+      const file = req.file;
 
-    const image = await generateImage({ blockingImage, prompt, style });
+      if (!file?.buffer) return res.status(400).json({ error: 'blockingImage (file) is required' });
+      if (!prompt) return res.status(400).json({ error: 'prompt is required' });
+      if (!file.mimetype || !file.mimetype.startsWith('image/')) {
+        return res.status(400).json({ error: 'blockingImage must be an image' });
+      }
 
-    // TODO(M1.4):把 image 上传到 Cloud Storage,返回真实 URL;现阶段先回 data URL
-    const response: GenerateResponse = {
-      imageUrl: image.dataUrl,
-      createdAt: Date.now(),
-    };
-    res.json(response);
-  } catch (err) {
-    console.error('[generate] error', err);
-    res.status(500).json({ error: (err as Error).message ?? 'generation failed' });
-  }
-});
+      const image = await deps.generateImage({
+        blockingImage: file.buffer,
+        mimeType: file.mimetype,
+        prompt,
+        style,
+      });
+
+      // TODO(M1.4):把 image 上传到 Cloud Storage,返回真实 URL;现阶段先回 data URL
+      const response: GenerateResponse = {
+        imageUrl: image.dataUrl,
+        createdAt: Date.now(),
+      };
+      res.json(response);
+    } catch (err) {
+      console.error('[generate] error', err);
+      res.status(500).json({ error: (err as Error).message ?? 'generation failed' });
+    }
+  });
+
+  return router;
+}
+
+export const generateRouter = makeGenerateRouter();
