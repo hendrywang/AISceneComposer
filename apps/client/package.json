@@ -18,7 +18,7 @@
   "dependencies": {
     "@asc/resource-library": "workspace:*",
     "@asc/shared-types": "workspace:*",
-    "@expo/metro-runtime": "~56.0.15",
+    "@expo/metro-runtime": "~57.0.3",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "expo": "~56.0.11",
