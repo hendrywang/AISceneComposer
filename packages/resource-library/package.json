@@ -17,7 +17,7 @@
     "lint": "eslint src scripts"
   },
   "devDependencies": {
-    "tsx": "^4.7.0",
+    "tsx": "^4.23.12",
     "typescript": "~6.0.3"
   }
 }

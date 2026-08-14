@@ -19,22 +19,22 @@
     "@asc/resource-library": "workspace:*",
     "@asc/shared-types": "workspace:*",
     "@expo/metro-runtime": "~56.0.15",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.6.1",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "expo": "~56.0.11",
     "expo-status-bar": "~56.0.4",
-    "i18next": "^26.3.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-i18next": "^17.0.8",
-    "react-native": "0.85.3",
+    "i18next": "^26.3.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-i18next": "^17.0.11",
+    "react-native": "0.86.2",
     "react-native-web": "^0.21.2",
-    "three": "^0.184.0",
+    "three": "^0.185.1",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "@types/react": "~19.2.2",
-    "@types/three": "^0.184.0",
+    "@types/react": "~19.2.18",
+    "@types/three": "^0.185.4",
     "typescript": "~6.0.3"
   }
 }
